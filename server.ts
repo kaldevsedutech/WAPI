@@ -11,6 +11,9 @@ import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
+import cors from "cors";
+import helmet from "helmet";
+import { rateLimit } from "express-rate-limit";
 
 dotenv.config();
 
@@ -25,6 +28,56 @@ const ai = new GoogleGenAI({
 });
 
 const app = express();
+
+// 1. Enable Helmet for secure HTTP headers (adjusted to support SPA and resources)
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
+// 2. Enable CORS with configurable origin validation
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(",") 
+  : [];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow relative requests (same-origin), local dev, or whitelisted domains
+      if (!origin || allowedOrigins.includes(origin) || origin.startsWith("http://localhost:") || origin.includes("onrender.com")) {
+        callback(null, true);
+      } else {
+        callback(new Error("Blocked by CORS policy"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+// 3. Rate Limiters to secure authentication and API resource endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many authentication attempts. Please try again after 15 minutes." }
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 300, // Limit each IP to 300 requests per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Rate limit exceeded. Please slow down your requests." }
+});
+
+// Bind rate limit rules
+app.use("/api/auth/", authLimiter);
+app.use("/api/admin/", authLimiter);
+app.use("/api/", apiLimiter);
+
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 // Set up HTTP Server and Socket.IO

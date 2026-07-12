@@ -5,7 +5,6 @@ import makeWASocket, { initAuthCreds, DisconnectReason } from "@whiskeysockets/b
 import pino from "pino";
 import qrcodeLib from "qrcode";
 import { createServer as createViteServer } from "vite";
-import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { createServer } from "http";
@@ -23,11 +22,8 @@ const ai = new GoogleGenAI({
   }
 });
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 // Set up HTTP Server and Socket.IO
 const httpServer = createServer(app);

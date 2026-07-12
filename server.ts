@@ -1,7 +1,9 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import makeWASocket, { initAuthCreds, DisconnectReason } from "@whiskeysockets/baileys";
+import * as BaileysModule from "@whiskeysockets/baileys";
+const makeWASocket = (BaileysModule.default || BaileysModule) as any;
+const { initAuthCreds, DisconnectReason } = BaileysModule as any;
 import pino from "pino";
 import qrcodeLib from "qrcode";
 import { createServer as createViteServer } from "vite";

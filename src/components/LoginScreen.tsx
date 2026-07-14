@@ -1878,7 +1878,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     </p>
                   </div>
                 </div>
-              )}}
+              )}
 
               {checkoutStep === "paying" && (
                 <div className="p-12 text-center space-y-4">

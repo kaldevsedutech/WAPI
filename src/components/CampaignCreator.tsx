@@ -1840,7 +1840,7 @@ export default function CampaignCreator({ setTab, loadCampaigns, loadStats, user
               <div className="p-3.5 bg-amber-50/50 border border-amber-100 rounded-2xl text-[10px] text-amber-800 flex gap-2.5">
                 <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <p className="leading-relaxed font-medium">
-                  By clicking <strong>Resolve & Import</strong>, WAPISaaS will automatically skip all invalid phone format rows and purge any duplicate entries, loading only pristine, compliant marketing records.
+                  By clicking <strong>Resolve & Import</strong>, WAPIMI will automatically skip all invalid phone format rows and purge any duplicate entries, loading only pristine, compliant marketing records.
                 </p>
               </div>
             </div>

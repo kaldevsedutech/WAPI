@@ -28,6 +28,7 @@ const ai = new GoogleGenAI({
 });
 
 const app = express();
+app.set("trust proxy", 1);
 
 // 1. Enable Helmet for secure HTTP headers (adjusted to support SPA and resources)
 app.use(
@@ -390,7 +391,7 @@ const seedDB = () => {
       },
       {
         id: "med_3",
-        name: "WAPISaaS Integration Guide.pdf",
+        name: "WAPIMI Integration Guide.pdf",
         type: "pdf",
         url: "https://example.com/wapi_integration_guide.pdf",
         size: "2.4 MB",
@@ -3057,7 +3058,7 @@ app.get("/api/activity-logs", authenticateUser, (req, res) => {
         id: "log_init_1",
         userId: req.user.id,
         action: "Account Initialized",
-        details: "WAPISaaS account successfully initialized and configured with subscription details.",
+        details: "WAPIMI account successfully initialized and configured with subscription details.",
         timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
       },
       {
@@ -3125,13 +3126,13 @@ app.get("/api/faq-data", (req, res) => {
     faqs: [
       {
         category: "general",
-        question: "What is WAPISaaS and how does it work?",
-        answer: "WAPISaaS is a high-speed WhatsApp marketing broadcast and conversational automation platform. It allows businesses to connect their WhatsApp numbers securely by scanning a dynamic QR code. Once linked, you can import client contact groups, design high-impact campaigns with custom placeholders, manage real-time dual-inbox messages, configure AI-powered auto-replies, and view delivery metrics in real-time."
+        question: "What is WAPIMI and how does it work?",
+        answer: "WAPIMI is a high-speed WhatsApp marketing broadcast and conversational automation platform. It allows businesses to connect their WhatsApp numbers securely by scanning a dynamic QR code. Once linked, you can import client contact groups, design high-impact campaigns with custom placeholders, manage real-time dual-inbox messages, configure AI-powered auto-replies, and view delivery metrics in real-time."
       },
       {
         category: "billing",
         question: "How do plan subscriptions, renewals, and payments work?",
-        answer: "WAPISaaS offers three distinct billing cycles: Daily, Weekly, and Monthly. Subscriptions are billed automatically in advance based on your selected tier. Your active features, daily message limits, and allowed contact lists directly depend on this tier. To view or adjust your current subscription, navigate to the 'Billing & Plans' panel, where you can trigger payments, upgrade instantly, or cancel recurring billing."
+        answer: "WAPIMI offers three distinct billing cycles: Daily, Weekly, and Monthly. Subscriptions are billed automatically in advance based on your selected tier. Your active features, daily message limits, and allowed contact lists directly depend on this tier. To view or adjust your current subscription, navigate to the 'Billing & Plans' panel, where you can trigger payments, upgrade instantly, or cancel recurring billing."
       },
       {
         category: "billing",
@@ -3141,7 +3142,7 @@ app.get("/api/faq-data", (req, res) => {
       {
         category: "whatsapp",
         question: "Can my WhatsApp number get banned for broadcasting?",
-        answer: "Yes, WhatsApp enforces strict spam detection algorithms. WAPISaaS is built with progressive features to minimize this risk, including customizable inter-message cooldown delays, list randomized variables, and pre-sending warm-up lists. However, compliance is ultimately the user's responsibility. We highly recommend sending messages only to opted-in users, spacing broadcasts, and using realistic human delays to avoid trigger flags."
+        answer: "Yes, WhatsApp enforces strict spam detection algorithms. WAPIMI is built with progressive features to minimize this risk, including customizable inter-message cooldown delays, list randomized variables, and pre-sending warm-up lists. However, compliance is ultimately the user's responsibility. We highly recommend sending messages only to opted-in users, spacing broadcasts, and using realistic human delays to avoid trigger flags."
       },
       {
         category: "data",
@@ -3156,12 +3157,12 @@ app.get("/api/faq-data", (req, res) => {
       {
         category: "general",
         question: "What is the pre-upload validation step for CSV imports?",
-        answer: "When uploading a CSV file in the Campaign Creator, WAPISaaS runs an automated pre-flight scan. It screens all rows for required columns (specifically looking for a phone column containing valid numbers), filters out invalid phone structures (e.g. text characters, excessively short or long numbers), and detects duplicate records. You are presented with a detailed pre-import resolution summary where you can filter and load only pristine contacts."
+        answer: "When uploading a CSV file in the Campaign Creator, WAPIMI runs an automated pre-flight scan. It screens all rows for required columns (specifically looking for a phone column containing valid numbers), filters out invalid phone structures (e.g. text characters, excessively short or long numbers), and detects duplicate records. You are presented with a detailed pre-import resolution summary where you can filter and load only pristine contacts."
       },
       {
         category: "general",
         question: "Can I run conversational automated responses?",
-        answer: "Absolutely! The 'Auto Replies' feature allows you to specify target keyword conditions (e.g. 'pricing', 'support', 'hello'). Whenever a contact replies with a message matching your configured rule, WAPISaaS will automatically deliver your predefined automated response instantly. You can easily manage, toggle, or delete these rules dynamically."
+        answer: "Absolutely! The 'Auto Replies' feature allows you to specify target keyword conditions (e.g. 'pricing', 'support', 'hello'). Whenever a contact replies with a message matching your configured rule, WAPIMI will automatically deliver your predefined automated response instantly. You can easily manage, toggle, or delete these rules dynamically."
       }
     ],
     policies: {
@@ -3171,15 +3172,15 @@ app.get("/api/faq-data", (req, res) => {
         sections: [
           {
             title: "1. Agreement and Service Description",
-            content: "By accessing WAPISaaS ('the Service'), registering an account, or purchasing a subscription plan, you agree to be bound legally by these Terms of Service. WAPISaaS provides automated scheduling, contacts management, dashboard analytics, and messaging protocols using a web-based WhatsApp connection interface."
+            content: "By accessing WAPIMI ('the Service'), registering an account, or purchasing a subscription plan, you agree to be bound legally by these Terms of Service. WAPIMI provides automated scheduling, contacts management, dashboard analytics, and messaging protocols using a web-based WhatsApp connection interface."
           },
           {
             title: "2. Acceptable Use and Absolute Anti-Spam Policy",
-            content: "We maintain a zero-tolerance policy against spam, phishing, and unsolicited broadcasts. WAPISaaS must only be used to broadcast communications to clients who have explicitly opted-in to receive message alerts from your business. You are strictly forbidden from distributing illegal material, adult content, fraudulent offers, or offensive materials."
+            content: "We maintain a zero-tolerance policy against spam, phishing, and unsolicited broadcasts. WAPIMI must only be used to broadcast communications to clients who have explicitly opted-in to receive message alerts from your business. You are strictly forbidden from distributing illegal material, adult content, fraudulent offers, or offensive materials."
           },
           {
             title: "3. Session Boundaries and Service Limits",
-            content: "Because WhatsApp connection functions through a background session emulator syncing to your phone, service uptime depends partly on your device maintaining an active internet connection. WAPISaaS does not guarantee delivery speeds in instances of local network degradation or third-party WhatsApp platform updates. Daily, weekly, or monthly message volume limits are regulated strictly by your tier."
+            content: "Because WhatsApp connection functions through a background session emulator syncing to your phone, service uptime depends partly on your device maintaining an active internet connection. WAPIMI does not guarantee delivery speeds in instances of local network degradation or third-party WhatsApp platform updates. Daily, weekly, or monthly message volume limits are regulated strictly by your tier."
           },
           {
             title: "4. Billing, Auto-Renewals, and Cancellations",
@@ -3187,7 +3188,7 @@ app.get("/api/faq-data", (req, res) => {
           },
           {
             title: "5. Disclaimer of Warranties and Limitation of Liability",
-            content: "The Service is provided on an 'as is' and 'as available' basis without any express or implied warranties. In no event shall WAPISaaS, its creators, or administrators be liable for any direct, indirect, incidental, or consequential damages (including, but not limited to, WhatsApp account bans, loss of contacts, business interruption, or campaign lag)."
+            content: "The Service is provided on an 'as is' and 'as available' basis without any express or implied warranties. In no event shall WAPIMI, its creators, or administrators be liable for any direct, indirect, incidental, or consequential damages (including, but not limited to, WhatsApp account bans, loss of contacts, business interruption, or campaign lag)."
           }
         ]
       },
@@ -3218,7 +3219,7 @@ app.get("/api/faq-data", (req, res) => {
         sections: [
           {
             title: "1. How to Cancel Your Subscription",
-            content: "You can cancel your active recurring subscription plan at any time. To cancel, go to the Billing & Plans tab, find your current plan card, and click the 'Cancel Subscription' button. WAPISaaS does not levy any exit penalties or cancellation processing fees. Following cancellation, your plan remains active until the end of the current billing cycle."
+            content: "You can cancel your active recurring subscription plan at any time. To cancel, go to the Billing & Plans tab, find your current plan card, and click the 'Cancel Subscription' button. WAPIMI does not levy any exit penalties or cancellation processing fees. Following cancellation, your plan remains active until the end of the current billing cycle."
           },
           {
             title: "2. 48-Hour Full Refund Window",

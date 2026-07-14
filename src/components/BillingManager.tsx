@@ -657,14 +657,14 @@ export default function BillingManager({ user, onUserUpdate }: BillingManagerPro
               {/* Brand Banner */}
               <div className="flex justify-between items-start">
                 <div>
-                  <h1 className="text-lg font-black tracking-tight text-slate-900">WAPI SENDER</h1>
+                  <h1 className="text-lg font-black tracking-tight text-slate-900">WAPIMI SENDER</h1>
                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded uppercase">Enterprise SaaS</span>
                 </div>
                 <div className="text-right text-[10px] text-slate-400">
-                  <p>WAPI Sender Ltd.</p>
+                  <p>WAPIMI Sender Ltd.</p>
                   <p>79 Tech Square, Suite 400</p>
                   <p>Singapore, 138637</p>
-                  <p>billing@wapi-sender.com</p>
+                  <p>billing@wapimi-sender.com</p>
                 </div>
               </div>
 
@@ -701,7 +701,7 @@ export default function BillingManager({ user, onUserUpdate }: BillingManagerPro
                     <tbody className="divide-y divide-slate-100 text-slate-700">
                       <tr>
                         <td className="px-4 py-3 font-medium">
-                          WAPI Premium Plan — <span className="capitalize">{selectedInvoice.planId}</span>
+                          WAPIMI Premium Plan — <span className="capitalize">{selectedInvoice.planId}</span>
                           <p className="text-[10px] text-slate-400 font-normal">Active cycle: {selectedInvoice.cycle}</p>
                         </td>
                         <td className="px-4 py-3 text-center font-mono">1</td>

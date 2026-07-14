@@ -272,7 +272,7 @@ export default function UserProfileSettings({ user, onClose, onUserUpdate }: Use
                 <Palette className="w-4 h-4 text-slate-600 animate-pulse" />
                 Select Theme Brand Color
               </h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">Customize WAPISaaS colors to match your organization's unique brand identity</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">Customize WAPIMI colors to match your organization's unique brand identity</p>
             </div>
 
             {errorColor && (

@@ -102,7 +102,7 @@ export default function App() {
     {
       id: "sup_1",
       sender: "agent",
-      text: "Hello! Welcome to WAPISaaS Live Support Desk. 👋 How can we help you accelerate your marketing broadcasts today?",
+      text: "Hello! Welcome to WAPIMI Live Support Desk. 👋 How can we help you accelerate your marketing broadcasts today?",
       timestamp: new Date().toISOString()
     }
   ]);
@@ -588,7 +588,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center">
         <div className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-sm font-semibold text-slate-500">Initializing WAPISaaS Engine...</p>
+        <p className="text-sm font-semibold text-slate-500">Initializing WAPIMI Engine...</p>
       </div>
     );
   }
@@ -1126,7 +1126,7 @@ export default function App() {
                   <Keyboard className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-800">WAPI Keyboard Shortcuts</h3>
+                  <h3 className="text-sm font-bold text-slate-800">WAPIMI Keyboard Shortcuts</h3>
                   <p className="text-[10px] text-slate-400">Power-user navigation & search shortcuts</p>
                 </div>
               </div>

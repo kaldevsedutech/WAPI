@@ -87,7 +87,7 @@ export default function Sidebar({ currentTab, setTab, user, session, onLogout, o
             <Send className="w-5 h-5" />
           </div>
           <span className="font-bold text-lg text-white tracking-wide">
-            WAPI<span className={activeColor.text}>SaaS</span>
+            WAPI<span className={activeColor.text}>MI</span>
           </span>
         </div>
         

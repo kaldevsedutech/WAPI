@@ -136,13 +136,13 @@ export default function FaqAndPolicies({ user }: FaqAndPoliciesProps) {
           setFaqs([
             {
               category: "general",
-              question: "What is WAPISaaS and how does it work?",
-              answer: "WAPISaaS is a high-speed WhatsApp marketing broadcast and conversational automation platform. It allows businesses to connect their WhatsApp numbers securely by scanning a dynamic QR code. Once linked, you can import client contact groups, design campaigns with custom variables, manage dual-inbox messaging, and analyze response rates."
+              question: "What is WAPIMI and how does it work?",
+              answer: "WAPIMI is a high-speed WhatsApp marketing broadcast and conversational automation platform. It allows businesses to connect their WhatsApp numbers securely by scanning a dynamic QR code. Once linked, you can import client contact groups, design campaigns with custom variables, manage dual-inbox messaging, and analyze response rates."
             },
             {
               category: "billing",
               question: "How do plan subscriptions, renewals, and payments work?",
-              answer: "WAPISaaS offers Daily, Weekly, and Monthly plans. Subscriptions are billed automatically in advance. To view or adjust your subscription, navigate to the 'Billing & Plans' panel where you can upgrade instantly or cancel recurring billing."
+              answer: "WAPIMI offers Daily, Weekly, and Monthly plans. Subscriptions are billed automatically in advance. To view or adjust your subscription, navigate to the 'Billing & Plans' panel where you can upgrade instantly or cancel recurring billing."
             },
             {
               category: "billing",
@@ -508,7 +508,7 @@ export default function FaqAndPolicies({ user }: FaqAndPoliciesProps) {
                   <p>Legal Version: 2.5 • Effective July 9, 2026</p>
                   <p className="flex items-center gap-1.5">
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                    WAPISaaS Regulatory Compliance certified
+                    WAPIMI Regulatory Compliance certified
                   </p>
                 </div>
               </div>

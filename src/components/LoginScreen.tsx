@@ -484,7 +484,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <Send className="w-5.5 h-5.5" />
             </div>
             <span className="text-xl font-extrabold tracking-tight text-slate-950 font-sans">
-              WAPI<span className="text-emerald-600 font-medium">SaaS</span>
+              WAPI<span className="text-emerald-600 font-medium">MI</span>
             </span>
           </button>
 
@@ -921,7 +921,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         {activeTab === "about" && (
           <div className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">About WAPISaaS</h1>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">About WAPIMI</h1>
               <p className="text-sm text-slate-500 max-w-xl mx-auto">
                 Providing standard, robust solutions for business automation and bulk customer notifications.
               </p>
@@ -934,7 +934,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   <span>Company Ownership Details</span>
                 </h3>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  WAPISaaS is a specialized WhatsApp campaign management software suite proudly owned and operated by:
+                  WAPIMI is a specialized WhatsApp campaign management software suite proudly owned and operated by:
                 </p>
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   <div>
@@ -943,7 +943,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   </div>
                   <div>
                     <span className="block text-[10px] text-slate-400 font-bold uppercase">OFFICIAL REGISTRATION</span>
-                    <span className="text-slate-800 font-semibold">WAPISaaS Automation Technologies Pvt Ltd</span>
+                    <span className="text-slate-800 font-semibold">WAPIMI Automation Technologies Pvt Ltd</span>
                   </div>
                   <div>
                     <span className="block text-[10px] text-slate-400 font-bold uppercase">PHYSICAL OFFICE ADDRESS</span>
@@ -1044,7 +1044,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     </div>
                     <h3 className="text-lg font-bold text-slate-900">Message Sent Successfully!</h3>
                     <p className="text-xs text-slate-500 leading-relaxed">
-                      Thank you for contacting WAPISaaS. A customer support representative has logged ticket #T-{Math.floor(Math.random()*89999+10000)} and will reply shortly.
+                      Thank you for contacting WAPIMI. A customer support representative has logged ticket #T-{Math.floor(Math.random()*89999+10000)} and will reply shortly.
                     </p>
                   </div>
                 ) : (
@@ -1766,7 +1766,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold">WAPISaaS PayDesk</h3>
+                    <h3 className="text-sm font-bold">WAPIMI PayDesk</h3>
                     <p className="text-[10px] text-slate-400">SECURED BY RAZORPAY GATEWAY</p>
                   </div>
                 </div>
@@ -2020,7 +2020,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <div className="bg-emerald-600 text-white p-1.5 rounded-lg">
                 <Send className="w-4 h-4" />
               </div>
-              <span className="text-sm font-extrabold text-white">WAPISaaS</span>
+              <span className="text-sm font-extrabold text-white">WAPIMI</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed">
               Enterprise WhatsApp marketing automation software. Build contact groups, schedule campaigns, auto-reply with AI, and track receipts.
@@ -2062,7 +2062,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         </div>
 
         <div className="max-w-7xl mx-auto border-t border-slate-800 mt-8 pt-6 text-center text-[10px] text-slate-600">
-          <p>© 2026 WAPISaaS Automation Technologies. All Rights Reserved. WhatsApp is a registered trademark of Meta Platforms Inc.</p>
+          <p>© 2026 WAPIMI Automation Technologies. All Rights Reserved. WhatsApp is a registered trademark of Meta Platforms Inc.</p>
         </div>
       </footer>
 

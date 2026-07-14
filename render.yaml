@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: wapi-saas
+    runtime: docker
+    repo: https://github.com/kaldevsedutech/WAPI
+    branch: main
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: APP_URL
+        value: https://wapi-saas.onrender.com
+      - key: ALLOWED_ORIGINS
+        value: https://wapi-saas.onrender.com
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

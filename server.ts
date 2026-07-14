@@ -175,7 +175,7 @@ const db = {
       return [];
     }
     try {
-      const content = fs.readFileSync(filePath, "utf-8");
+      const content = fs.readFileSync(filePath, "utf-8").replace(/^\uFEFF/, "");
       return JSON.parse(content);
     } catch (e) {
       console.error(`Error reading collection ${collection}`, e);

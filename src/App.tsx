@@ -462,7 +462,7 @@ export default function App() {
     if (!token) return;
 
     // Connect to Socket.IO server at root URL
-    const socket = io(window.location.origin || "http://localhost:3000", {
+    const socket = io((import.meta.env.VITE_API_URL as string) || window.location.origin || "http://localhost:3000", {
       auth: { token }
     });
 

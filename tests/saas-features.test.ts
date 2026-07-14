@@ -14,7 +14,7 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: "+919876543210", // u_demo's registered allowedWhatsapp
-        password: "abc"
+        password: "user1"
       })
     });
 

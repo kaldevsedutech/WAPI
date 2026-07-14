@@ -211,9 +211,9 @@ const seedDB = () => {
       },
       {
         id: "u_demo",
-        name: "SaaS Subscriber",
-        email: "abc@gmail.com",
-        password: "abc",
+        name: "Test User 1",
+        email: "user1@gmail.com",
+        password: "user1",
         role: "user",
         allowedWhatsapp: "+919876543210",
         subscription: "premium",
@@ -226,12 +226,12 @@ const seedDB = () => {
         activeSessionToken: "token_demo"
       },
       {
-        id: "u_fayaz_lk",
-        name: "Shaik Fayaz (Sri Lanka)",
-        email: "sfayazmr@gmail.com",
-        password: "fayaz@123",
+        id: "u_user2",
+        name: "Test User 2",
+        email: "user2@gmail.com",
+        password: "user2",
         role: "user",
-        allowedWhatsapp: "+9493165230",
+        allowedWhatsapp: "+919988776655",
         subscription: "premium",
         billingCycle: "weekly",
         expiryDate: "2026-10-01",
@@ -2723,19 +2723,6 @@ app.delete("/api/autoreply/rules/:id", authenticateUser, (req, res) => {
 // --- BILLING & SUBSCRIPTION SaaS ENDPOINTS ---
 app.get("/api/billing/plans", authenticateUser, (req, res) => {
   const plans = [
-    {
-      id: "basic",
-      name: "Basic Growth Plan",
-      limits: "1,000 messages / day",
-      dailyLimit: 1000,
-      pricing: {
-        daily: 5,
-        weekly: 30,
-        monthly: 100,
-        annual: 1000
-      },
-      features: ["Rule-based auto-replies", "CSV contact import", "Basic outbound analytics"]
-    },
     {
       id: "premium",
       name: "Premium Automation Suite",

@@ -1219,16 +1219,16 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      setPhone("+9493165230");
-                      setPassword("fayaz@123");
+                      setPhone("+919876543210");
+                      setPassword("user1");
                       setError("");
                       setSuccess("");
                     }}
                     className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all cursor-pointer shadow-sm group"
                   >
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Shaik Fayaz (+94 931 65230)</p>
-                      <p className="text-[10px] text-slate-400 font-mono">Password: fayaz@123</p>
+                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Test User 1 (+91 98765 43210)</p>
+                      <p className="text-[10px] text-slate-400 font-mono">Password: user1</p>
                     </div>
                     <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-2 py-0.5 rounded uppercase">Fill</span>
                   </button>
@@ -1236,16 +1236,16 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      setPhone("+919392785230");
-                      setPassword("fayaz@123");
+                      setPhone("+919988776655");
+                      setPassword("user2");
                       setError("");
                       setSuccess("");
                     }}
                     className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all cursor-pointer shadow-sm group"
                   >
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Shaik Fayaz (+91 93927 85230)</p>
-                      <p className="text-[10px] text-slate-400 font-mono">Password: fayaz@123</p>
+                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Test User 2 (+91 99887 76655)</p>
+                      <p className="text-[10px] text-slate-400 font-mono">Password: user2</p>
                     </div>
                     <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-2 py-0.5 rounded uppercase">Fill</span>
                   </button>
@@ -1594,55 +1594,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 </div>
               )}
 
-              {/* Quick Fill Registration Testing Shortcut */}
-              <div className="mb-6 p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/80">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
-                  <span className="text-xs font-bold text-slate-800">Registration Testing Shortcut</span>
-                </div>
-                <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
-                  Click below to auto-populate Shaik Fayaz's credentials for new account registration:
-                </p>
-                <div className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRegName("Shaik Fayaz");
-                      setRegEmail("sfayazmr@gmail.com");
-                      setRegPhone("+9493165230");
-                      setRegPassword("fayaz@123");
-                      setError("");
-                      setSuccess("");
-                    }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all cursor-pointer shadow-sm group"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Shaik Fayaz (+94 931 65230)</p>
-                      <p className="text-[10px] text-slate-400 font-mono">Email: sfayazmr@gmail.com</p>
-                    </div>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-2 py-0.5 rounded uppercase">Fill</span>
-                  </button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRegName("Shaik Fayaz");
-                      setRegEmail("sfayazmr@gmail.com");
-                      setRegPhone("+919392785230");
-                      setRegPassword("fayaz@123");
-                      setError("");
-                      setSuccess("");
-                    }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all cursor-pointer shadow-sm group"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Shaik Fayaz (+91 93927 85230)</p>
-                      <p className="text-[10px] text-slate-400 font-mono">Email: sfayazmr@gmail.com</p>
-                    </div>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-2 py-0.5 rounded uppercase">Fill</span>
-                  </button>
-                </div>
-              </div>
 
               <form className="space-y-4" onSubmit={handleRegisterSubmit}>
                 <div>

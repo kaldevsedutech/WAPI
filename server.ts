@@ -889,10 +889,10 @@ app.post("/api/auth/register", (req, res) => {
     return res.status(400).json({ error: "This mobile number is already registered under another account." });
   }
 
-  // Create new user with standard 30-day Basic free trial
-  const trialExpiry = new Date();
-  trialExpiry.setDate(trialExpiry.getDate() + 30);
-  const expiryStr = trialExpiry.toISOString().split("T")[0];
+  // Create a pending account. Access is activated only after Razorpay verification.
+  const pendingExpiry = new Date();
+  pendingExpiry.setDate(pendingExpiry.getDate() - 1);
+  const expiryStr = pendingExpiry.toISOString().split("T")[0];
 
   const newUser = {
     id: "u_" + Math.random().toString(36).substring(2, 9),
@@ -900,13 +900,13 @@ app.post("/api/auth/register", (req, res) => {
     email: email.trim(),
     password: password, // For consistency with this app's existing plain-text auth
     allowedWhatsapp: allowedWhatsapp.trim(),
-    subscription: "basic",
+    subscription: "none",
     expiryDate: expiryStr,
     status: "active",
     role: "user",
     experienceMode: "daily",
     createdAt: new Date().toISOString(),
-    dailyMessageLimit: 1000,
+    dailyMessageLimit: 0,
     messagesSentToday: 0,
     activeSessionToken: createSessionToken(),
   };

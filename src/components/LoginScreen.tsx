@@ -12,18 +12,21 @@ interface LoginScreenProps {
   onLoginSuccess: (token: string, user: any) => void;
 }
 
+const DAILY_STARTER_PLAN = {
+  id: "premium",
+  name: "Daily WhatsApp Marketing",
+  price: "₹15",
+  billing: "billed daily",
+  cycle: "daily"
+};
+
 export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   // Navigation Tabs for the Public Website
   // "home" | "about" | "features" | "pricing" | "contact" | "terms" | "privacy" | "refund" | "login" | "register" | "checkout"
   const [activeTab, setActiveTab] = useState<string>("home");
   
   // Registration & Plan States
-  const [selectedPlan, setSelectedPlan] = useState<any>({
-    id: "trial",
-    name: "Basic Trial",
-    price: "$0",
-    billing: "30-day trial"
-  });
+  const [selectedPlan, setSelectedPlan] = useState<any>(DAILY_STARTER_PLAN);
 
   // Login States
   const [phone, setPhone] = useState("");
@@ -311,6 +314,16 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     return digits.length >= 8 && digits.length <= 15;
   };
 
+  const readApiResponse = async (res: Response) => {
+    const text = await res.text();
+    try {
+      return text ? JSON.parse(text) : {};
+    } catch {
+      const preview = text.trim().slice(0, 120) || res.statusText;
+      throw new Error(`Server returned a non-JSON response (${res.status}). ${preview}`);
+    }
+  };
+
   const handlePhoneChange = (val: string, type: "login" | "register") => {
     if (type === "login") {
       setPhone(val.replace(/[^a-zA-Z0-9@._\s\-\+\(\)]/g, ""));
@@ -344,7 +357,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         body: JSON.stringify({ email: phone, password }), // Passed as email for API compatibility
       });
 
-      const data = await res.json();
+      const data = await readApiResponse(res);
       if (!res.ok) {
         throw new Error(data.error || "Authentication failed");
       }
@@ -353,43 +366,6 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       onLoginSuccess(data.token, data.user);
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const registerUserAndLogin = async (_planId: string) => {
-    setError("");
-    setSuccess("");
-    setLoading(true);
-
-    try {
-      const fullPhone = regCountryCode + regPhone.trim().replace(/\D/g, "");
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: regName.trim(),
-          email: regEmail.trim(),
-          password: regPassword,
-          allowedWhatsapp: fullPhone,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Trial registration failed.");
-      }
-
-      if (!data.token) {
-        throw new Error("Registration succeeded but no login session was returned.");
-      }
-
-      setSuccess("Trial account registered successfully!");
-      localStorage.setItem("wapi_token", data.token);
-      onLoginSuccess(data.token, data.user);
-    } catch (err: any) {
-      setError(err.message || "Failed to activate trial account.");
     } finally {
       setLoading(false);
     }
@@ -432,14 +408,9 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setError("");
     setSuccess("");
 
-    if (selectedPlan.id === "trial") {
-      // Trial is free, register directly
-      registerUserAndLogin("trial");
-    } else {
-      // Paid plan, open the Checkout simulator
-      setCheckoutStep("form");
-      setActiveTab("checkout");
-    }
+    setSelectedPlan((current: any) => current?.id ? current : DAILY_STARTER_PLAN);
+    setCheckoutStep("form");
+    setActiveTab("checkout");
   };
 
   // Complete Registration & Log in with optional Razorpay checkout
@@ -459,34 +430,23 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         })
       });
 
-      const regData = await regRes.json();
+      const regData = await readApiResponse(regRes);
       if (!regRes.ok) {
         throw new Error(regData.error || "Registration profile creation failed.");
       }
 
-      // If they subscribed to a Trial plan, skip payment
-      if (selectedPlan.id === "trial") {
-        setCheckoutStep("success");
-        setSuccess("Trial account registered successfully!");
-        localStorage.setItem("wapi_token", regData.token);
-        
-        setTimeout(() => {
-          onLoginSuccess(regData.token, regData.user);
-        }, 1500);
-        return;
-      }
-
       // Fetch Razorpay Order from backend
+      const billingCycle = selectedPlan.cycle || "daily";
       const orderRes = await fetch("/api/billing/subscribe", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Authorization": `Bearer ${regData.token}`
         },
-        body: JSON.stringify({ planId: selectedPlan.id, cycle: "monthly" })
+        body: JSON.stringify({ planId: selectedPlan.id, cycle: billingCycle })
       });
 
-      const orderData = await orderRes.json();
+      const orderData = await readApiResponse(orderRes);
       if (!orderRes.ok) {
         throw new Error(orderData.error || "Failed to initialize Razorpay checkout session.");
       }
@@ -501,7 +461,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         amount: orderData.amount,
         currency: orderData.currency,
         name: "WAPIMI SENDER",
-        description: `Upgrade to ${selectedPlan.name} (Monthly)`,
+        description: `${selectedPlan.name} (${billingCycle})`,
         order_id: orderData.orderId,
         handler: async function (response: any) {
           try {
@@ -517,11 +477,11 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
                 planId: selectedPlan.id,
-                cycle: "monthly"
+                cycle: billingCycle
               })
             });
 
-            const verifyData = await verifyRes.json();
+            const verifyData = await readApiResponse(verifyRes);
             if (!verifyRes.ok) {
               throw new Error(verifyData.error || "Signature verification failed.");
             }
@@ -645,14 +605,14 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
             </button>
             <button 
               onClick={() => {
-                setSelectedPlan({ id: "trial", name: "Basic Trial", price: "$0", billing: "30-day trial" });
+                setSelectedPlan(DAILY_STARTER_PLAN);
                 setActiveTab("register");
                 setError("");
                 setSuccess("");
               }} 
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4.5 py-2.5 rounded-xl shadow-md shadow-emerald-200 transition-all cursor-pointer"
             >
-              Start Free Trial
+              Start ₹15 / Day
             </button>
           </div>
         </div>
@@ -686,12 +646,12 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
                     <button 
                       onClick={() => {
-                        setSelectedPlan({ id: "trial", name: "Basic Trial", price: "$0", billing: "30-day trial" });
+                        setSelectedPlan(DAILY_STARTER_PLAN);
                         setActiveTab("register");
                       }}
                       className="w-full sm:w-auto px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
                     >
-                      <span>Start 30-Day Free Trial</span>
+                      <span>Start for ₹15 / Day</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                     <button 
@@ -902,14 +862,14 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex flex-col justify-between space-y-6 hover:shadow-md transition-shadow">
                 <div className="space-y-4">
                   <div>
-                    <span className="text-xs font-bold text-slate-400 uppercase">30-Day Evaluation</span>
-                    <h3 className="text-xl font-bold text-slate-900 mt-1">Basic Trial</h3>
+                    <span className="text-xs font-bold text-slate-400 uppercase">Daily Starter</span>
+                    <h3 className="text-xl font-bold text-slate-900 mt-1">Daily WhatsApp Marketing</h3>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-slate-900">₹0</span>
-                    <span className="text-xs text-slate-400 font-semibold uppercase">/ Month</span>
+                    <span className="text-3xl font-extrabold text-slate-900">₹15</span>
+                    <span className="text-xs text-slate-400 font-semibold uppercase">/ Day</span>
                   </div>
-                  <p className="text-xs text-slate-500">Perfect for evaluating the broadcasting engine speed.</p>
+                  <p className="text-xs text-slate-500">Start WhatsApp marketing with a daily Razorpay subscription.</p>
                   <ul className="space-y-2.5 text-xs text-slate-600 pt-3 border-t border-slate-100">
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-500" />
@@ -931,12 +891,12 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 </div>
                 <button 
                   onClick={() => {
-                    setSelectedPlan({ id: "trial", name: "Basic Trial", price: "₹0", billing: "30 days free" });
+                    setSelectedPlan(DAILY_STARTER_PLAN);
                     setActiveTab("register");
                   }}
                   className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors cursor-pointer"
                 >
-                  Start Evaluation Free
+                  Pay ₹15 & Start
                 </button>
               </div>
 
@@ -976,7 +936,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 </div>
                 <button 
                   onClick={() => {
-                    setSelectedPlan({ id: "premium", name: "Professional Plan", price: "₹300", billing: "billed monthly" });
+                    setSelectedPlan({ id: "premium", name: "Professional Plan", price: "₹300", billing: "billed monthly", cycle: "monthly" });
                     setActiveTab("register");
                   }}
                   className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md shadow-emerald-200 transition-colors cursor-pointer"
@@ -1018,7 +978,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 </div>
                 <button 
                   onClick={() => {
-                    setSelectedPlan({ id: "business", name: "Enterprise Business", price: "₹500", billing: "billed monthly" });
+                    setSelectedPlan({ id: "business", name: "Enterprise Business", price: "₹500", billing: "billed monthly", cycle: "monthly" });
                     setActiveTab("register");
                   }}
                   className="w-full py-3 bg-slate-900 hover:bg-slate-950 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
@@ -1610,7 +1570,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                       <button
                         type="button"
                         onClick={() => {
-                          setSelectedPlan({ id: "trial", name: "Basic Trial", price: "$0", billing: "30 days free" });
+                          setSelectedPlan(DAILY_STARTER_PLAN);
                           setActiveTab("register");
                           setError("");
                           setSuccess("");
@@ -1795,7 +1755,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   type="submit"
                   className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition-colors cursor-pointer"
                 >
-                  {selectedPlan.id === "trial" ? "Register & Activate Free Account" : `Pay ${selectedPlan.price} & Register`}
+                  {`Pay ${selectedPlan.price} & Register`}
                 </button>
 
                 <div className="mt-4 pt-4 border-t border-slate-100 text-center">
@@ -1854,7 +1814,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     </div>
                     <div className="border-t border-slate-200 pt-3 flex justify-between text-[10px] text-slate-500">
                       <span>Billing Cycle</span>
-                      <span className="font-bold uppercase text-slate-700">Monthly</span>
+                      <span className="font-bold uppercase text-slate-700">{selectedPlan.cycle || "daily"}</span>
                     </div>
                   </div>
 

@@ -5,7 +5,12 @@ import './index.css';
 
 // Global Fetch Interceptor to support Vercel hosting with remote Render backend
 const getApiBaseUrl = () => {
-  return (import.meta.env.VITE_API_URL as string) || "";
+  const configured = (import.meta.env.VITE_API_URL as string) || "";
+  if (configured) return configured;
+  if (window.location.hostname.endsWith(".vercel.app")) {
+    return "https://wapi-saas.onrender.com";
+  }
+  return "";
 };
 
 const originalFetch = window.fetch;

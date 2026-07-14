@@ -14,8 +14,16 @@ import { Server as SocketIOServer } from "socket.io";
 import cors from "cors";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
+import Razorpay from "razorpay";
+import crypto from "crypto";
 
 dotenv.config();
+
+// Initialize Razorpay client with user provided credentials (or environment overrides)
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_TDL8i01bHsCudi",
+  key_secret: process.env.RAZORPAY_KEY_SECRET || "0ol3L00rzQOu1nMjl0dn0mFE",
+});
 
 // Initialize server-side Gemini client for low-latency smart auto-replies
 const ai = new GoogleGenAI({
@@ -2758,10 +2766,65 @@ app.get("/api/billing/plans", authenticateUser, (req, res) => {
   res.json({ plans });
 });
 
-app.post("/api/billing/subscribe", authenticateUser, (req, res) => {
+app.post("/api/billing/subscribe", authenticateUser, async (req, res) => {
   const { planId, cycle } = req.body;
   if (!planId || !cycle) {
     return res.status(400).json({ error: "Plan choice and billing cycle are required." });
+  }
+
+  const prices: Record<string, Record<string, number>> = {
+    basic: { daily: 5, weekly: 30, monthly: 100, annual: 1000, annually: 1000 },
+    premium: { daily: 15, weekly: 90, monthly: 300, annual: 3000, annually: 3000 },
+    business: { daily: 25, weekly: 150, monthly: 500, annual: 5000, annually: 5000 }
+  };
+
+  const amount = prices[planId]?.[cycle];
+  if (amount === undefined) {
+    return res.status(400).json({ error: "Invalid plan or billing cycle selection." });
+  }
+
+  // Create Razorpay Order
+  const options = {
+    amount: amount * 100, // Amount in paise
+    currency: "INR",
+    receipt: `receipt_${req.user.id}_${Date.now()}`,
+  };
+
+  try {
+    const order = await razorpay.orders.create(options);
+    res.json({
+      requiresPayment: true,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      keyId: process.env.RAZORPAY_KEY_ID || "rzp_test_TDL8i01bHsCudi",
+      user: {
+        name: req.user.name,
+        email: req.user.email,
+        phone: req.user.allowedWhatsapp,
+      }
+    });
+  } catch (err) {
+    console.error("Razorpay order creation failed:", err);
+    res.status(550).json({ error: "Failed to initialize Razorpay transaction. Verify payment settings." });
+  }
+});
+
+app.post("/api/billing/verify-payment", authenticateUser, (req, res) => {
+  const { razorpay_payment_id, razorpay_order_id, razorpay_signature, planId, cycle } = req.body;
+  if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature || !planId || !cycle) {
+    return res.status(400).json({ error: "Missing required payment verification parameters." });
+  }
+
+  // Verify HMAC signature
+  const key_secret = process.env.RAZORPAY_KEY_SECRET || "0ol3L00rzQOu1nMjl0dn0mFE";
+  const hmac = crypto.createHmac("sha256", key_secret);
+  hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+  const generatedSignature = hmac.digest("hex");
+
+  if (generatedSignature !== razorpay_signature) {
+    logActivity(req.user.id, "Payment Verification Failed", `Razorpay signature check failed for order ${razorpay_order_id}`);
+    return res.status(400).json({ error: "Payment verification failed. Security signature mismatch." });
   }
 
   const prices: Record<string, Record<string, number>> = {
@@ -2777,14 +2840,10 @@ app.post("/api/billing/subscribe", authenticateUser, (req, res) => {
   };
 
   const amount = prices[planId]?.[cycle];
-  if (amount === undefined) {
-    return res.status(400).json({ error: "Invalid plan or billing cycle selection." });
-  }
-
   const users = db.read("users");
   const userIdx = users.findIndex(u => u.id === req.user.id);
   if (userIdx === -1) {
-    return res.status(404).json({ error: "User not found." });
+    return res.status(404).json({ error: "User profile not found." });
   }
 
   // Set subscription expiry
@@ -2808,7 +2867,7 @@ app.post("/api/billing/subscribe", authenticateUser, (req, res) => {
   // Save transaction receipt
   const transactions = db.read("transactions");
   const newTx = {
-    id: "tx_" + Math.random().toString(36).substring(2, 9),
+    id: `tx_${razorpay_payment_id}`,
     userId: req.user.id,
     planId,
     cycle,
@@ -2820,10 +2879,11 @@ app.post("/api/billing/subscribe", authenticateUser, (req, res) => {
   transactions.push(newTx);
   db.write("transactions", transactions);
 
-  logActivity(req.user.id, "Subscription Upgraded", `Upgraded subscription to ${planId.toUpperCase()} (${cycle}) for ₹${amount}. Expiry: ${users[userIdx].expiryDate}`);
+  logActivity(req.user.id, "Subscription Purchased", `Upgraded plan to ${planId.toUpperCase()} (${cycle}) for ₹${amount}. Expiry: ${users[userIdx].expiryDate}`);
 
   res.json({
-    message: `Subscription upgraded to ${planId} (${cycle})!`,
+    success: true,
+    message: `Subscription successfully upgraded to ${planId} (${cycle})!`,
     user: users[userIdx],
     transaction: newTx
   });

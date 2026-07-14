@@ -391,12 +391,13 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   };
 
-  // Complete Registration & Log in after payment simulation succeeds
-  const registerUserAndLogin = async (planId: string) => {
-    setLoading(true);
+  // Complete Registration & Log in with optional Razorpay checkout
+  const handleRazorpayCheckout = async () => {
+    setError("");
+    setCheckoutStep("paying");
     try {
       const fullPhone = regCountryCode + regPhone.trim().replace(/\D/g, "");
-      const res = await fetch("/api/auth/register", {
+      const regRes = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -407,35 +408,107 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         })
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Registration failed");
+      const regData = await regRes.json();
+      if (!regRes.ok) {
+        throw new Error(regData.error || "Registration profile creation failed.");
       }
 
-      // If they subscribed to a paid plan, update their database subscription tier via simulated server endpoint
-      if (planId !== "trial") {
-        await fetch("/api/billing/subscribe", {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${data.token}`
-          },
-          body: JSON.stringify({ planId, cycle: "monthly" })
-        });
+      // If they subscribed to a Trial plan, skip payment
+      if (selectedPlan.id === "trial") {
+        setCheckoutStep("success");
+        setSuccess("Trial account registered successfully!");
+        localStorage.setItem("wapi_token", regData.token);
+        
+        setTimeout(() => {
+          onLoginSuccess(regData.token, regData.user);
+        }, 1500);
+        return;
       }
 
-      setSuccess("Account provisioned successfully with " + selectedPlan.name + "!");
-      localStorage.setItem("wapi_token", data.token);
-      
-      setTimeout(() => {
-        onLoginSuccess(data.token, data.user);
-      }, 1500);
+      // Fetch Razorpay Order from backend
+      const orderRes = await fetch("/api/billing/subscribe", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${regData.token}`
+        },
+        body: JSON.stringify({ planId: selectedPlan.id, cycle: "monthly" })
+      });
+
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) {
+        throw new Error(orderData.error || "Failed to initialize Razorpay checkout session.");
+      }
+
+      const RazorpayConstructor = (window as any).Razorpay;
+      if (!RazorpayConstructor) {
+        throw new Error("Razorpay SDK is not loaded yet. Please refresh the page.");
+      }
+
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "WAPIMI SENDER",
+        description: `Upgrade to ${selectedPlan.name} (Monthly)`,
+        order_id: orderData.orderId,
+        handler: async function (response: any) {
+          try {
+            // Verify payment on the backend
+            const verifyRes = await fetch("/api/billing/verify-payment", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${regData.token}`
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                planId: selectedPlan.id,
+                cycle: "monthly"
+              })
+            });
+
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok) {
+              throw new Error(verifyData.error || "Signature verification failed.");
+            }
+
+            setCheckoutStep("success");
+            setSuccess("Account registered and plan upgraded successfully!");
+            localStorage.setItem("wapi_token", regData.token);
+            
+            setTimeout(() => {
+              onLoginSuccess(regData.token, verifyData.user);
+            }, 1500);
+
+          } catch (verifyErr: any) {
+            setError(verifyErr.message || "Payment verification failed.");
+            setCheckoutStep("form");
+          }
+        },
+        prefill: {
+          name: regData.user.name,
+          email: regData.user.email,
+          contact: regData.user.allowedWhatsapp,
+        },
+        theme: {
+          color: "#059669",
+        },
+      };
+
+      const rzp = new RazorpayConstructor(options);
+      rzp.on("payment.failed", function (response: any) {
+        setError(response.error.description || "Razorpay transaction failed.");
+        setCheckoutStep("form");
+      });
+
+      rzp.open();
 
     } catch (err: any) {
-      setError(err.message || "Failed to create your account.");
-      setActiveTab("register");
-    } finally {
-      setLoading(false);
+      setError(err.message || "Failed to complete transaction.");
+      setCheckoutStep("form");
     }
   };
 
@@ -455,17 +528,6 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       setContactMsg("");
       setTimeout(() => setContactSuccess(false), 8000);
     }, 1200);
-  };
-
-  const handleSimulatePayment = () => {
-    setCheckoutStep("paying");
-    setTimeout(() => {
-      setCheckoutStep("success");
-      setTimeout(() => {
-        // Proceed to finalize registration in DB
-        registerUserAndLogin(selectedPlan.id);
-      }, 1500);
-    }, 2500);
   };
 
   return (
@@ -1777,149 +1839,46 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               </div>
 
               {checkoutStep === "form" && (
-                <div className="p-6 space-y-6">
-                  
+                <div className="p-6 space-y-6 animate-fade-in">
                   {/* Order summary */}
-                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
-                    <div>
-                      <p className="font-bold text-slate-800">{selectedPlan.name}</p>
-                      <p className="text-[10px] text-slate-400">Standard business authorization node</p>
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3 text-xs">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-slate-800">{selectedPlan.name} Plan</p>
+                        <p className="text-[10px] text-slate-400">Standard business authorization node</p>
+                      </div>
+                      <span className="font-mono font-bold text-slate-800">{selectedPlan.price}</span>
                     </div>
-                    <span className="font-mono font-bold text-slate-800">{selectedPlan.price}</span>
-                  </div>
-
-                  {/* Payment tab selections */}
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-2">Select Payment Method</label>
-                    <div className="grid grid-cols-4 gap-2">
-                      <button 
-                        type="button"
-                        onClick={() => setPaymentMethod("card")}
-                        className={`p-2.5 rounded-xl border text-[10px] font-bold text-center transition-all cursor-pointer ${paymentMethod === "card" ? "border-emerald-600 bg-emerald-50/50 text-emerald-700 font-extrabold" : "border-slate-100 hover:bg-slate-50 text-slate-600"}`}
-                      >
-                        <CreditCard className="w-4 h-4 mx-auto mb-1" />
-                        <span>Card</span>
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => setPaymentMethod("upi")}
-                        className={`p-2.5 rounded-xl border text-[10px] font-bold text-center transition-all cursor-pointer ${paymentMethod === "upi" ? "border-emerald-600 bg-emerald-50/50 text-emerald-700 font-extrabold" : "border-slate-100 hover:bg-slate-50 text-slate-600"}`}
-                      >
-                        <Zap className="w-4 h-4 mx-auto mb-1" />
-                        <span>UPI</span>
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => setPaymentMethod("netbanking")}
-                        className={`p-2.5 rounded-xl border text-[10px] font-bold text-center transition-all cursor-pointer ${paymentMethod === "netbanking" ? "border-emerald-600 bg-emerald-50/50 text-emerald-700 font-extrabold" : "border-slate-100 hover:bg-slate-50 text-slate-600"}`}
-                      >
-                        <Building className="w-4 h-4 mx-auto mb-1" />
-                        <span>Net Bank</span>
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => setPaymentMethod("wallet")}
-                        className={`p-2.5 rounded-xl border text-[10px] font-bold text-center transition-all cursor-pointer ${paymentMethod === "wallet" ? "border-emerald-600 bg-emerald-50/50 text-emerald-700 font-extrabold" : "border-slate-100 hover:bg-slate-50 text-slate-600"}`}
-                      >
-                        <ShoppingCart className="w-4 h-4 mx-auto mb-1" />
-                        <span>Wallet</span>
-                      </button>
+                    <div className="border-t border-slate-200 pt-3 flex justify-between text-[10px] text-slate-500">
+                      <span>Billing Cycle</span>
+                      <span className="font-bold uppercase text-slate-700">Monthly</span>
                     </div>
                   </div>
 
-                  {/* Payment Details Form */}
-                  <div className="space-y-4 border-t border-slate-100 pt-4">
-                    {paymentMethod === "card" && (
-                      <div className="space-y-3 font-mono text-xs">
-                        <div>
-                          <label className="block text-[10px] font-semibold text-slate-400 uppercase mb-1">CARD NUMBER</label>
-                          <input 
-                            type="text" 
-                            value={simulatedCardNumber}
-                            onChange={(e) => setSimulatedCardNumber(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-emerald-500 font-mono text-xs outline-none"
-                            placeholder="4111 2222 3333 4444"
-                          />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-[10px] font-semibold text-slate-400 uppercase mb-1">EXPIRY</label>
-                            <input 
-                              type="text" 
-                              value={simulatedCardExpiry}
-                              onChange={(e) => setSimulatedCardExpiry(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-emerald-500 text-center outline-none"
-                              placeholder="MM/YY"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] font-semibold text-slate-400 uppercase mb-1">CVV / CVC</label>
-                            <input 
-                              type="password" 
-                              value={simulatedCardCVV}
-                              onChange={(e) => setSimulatedCardCVV(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-emerald-500 text-center outline-none"
-                              placeholder="***"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {paymentMethod === "upi" && (
-                      <div className="space-y-3">
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase">ENTER UPI ID / VPA</label>
-                        <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            value={simulatedUPIId}
-                            onChange={(e) => setSimulatedUPIId(e.target.value)}
-                            className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs font-mono outline-none focus:ring-1 focus:ring-emerald-500"
-                            placeholder="username@okaxis"
-                          />
-                        </div>
-                        <p className="text-[10px] text-slate-400">A request will be sent to your UPI app for authorization.</p>
-                      </div>
-                    )}
-
-                    {paymentMethod === "netbanking" && (
-                      <div className="space-y-3">
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">POPULAR BANKS</label>
-                        <select className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
-                          <option>State Bank of India</option>
-                          <option>HDFC Bank</option>
-                          <option>ICICI Bank</option>
-                          <option>Axis Bank</option>
-                        </select>
-                      </div>
-                    )}
-
-                    {paymentMethod === "wallet" && (
-                      <div className="space-y-3">
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">SELECT WALLET</label>
-                        <select className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none">
-                          <option>Razorpay Wallet Balance</option>
-                          <option>Paytm Wallet</option>
-                          <option>PhonePe Wallet</option>
-                        </select>
-                      </div>
-                    )}
+                  <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl flex gap-3 text-slate-700">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-[10px] uppercase text-emerald-800 tracking-wider">Secured by Razorpay</h4>
+                      <p className="text-[9px] leading-relaxed text-emerald-700">
+                        We delegate payment options to Razorpay's overlay. You can pay securely using Cards, UPI, Netbanking, or mobile wallets in the next step.
+                      </p>
+                    </div>
                   </div>
 
                   <div className="pt-2">
                     <button 
-                      onClick={handleSimulatePayment}
-                      className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-200 cursor-pointer flex items-center justify-center gap-2"
+                      onClick={handleRazorpayCheckout}
+                      className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-200 cursor-pointer flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
                     >
                       <ShieldCheck className="w-4 h-4" />
-                      <span>Confirm Secure Authorization & Pay</span>
+                      <span>Proceed to Secure Payment</span>
                     </button>
                     <p className="text-[9px] text-center text-slate-400 mt-2">
-                      Secured using AES 256-bit bank level security tokens.
+                      Your transaction details are encrypted using SSL and processed via secure webhook tokens.
                     </p>
                   </div>
                 </div>
-              )}
+              )}}
 
               {checkoutStep === "paying" && (
                 <div className="p-12 text-center space-y-4">

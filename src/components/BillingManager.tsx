@@ -19,6 +19,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { api } from "../lib/api";
+import { processRazorpaySubscription } from "../lib/razorpay";
 
 interface BillingManagerProps {
   user: any;
@@ -87,14 +88,6 @@ export default function BillingManager({ user, onUserUpdate }: BillingManagerPro
   const [autoRenew, setAutoRenew] = useState(true);
   const [showCardForm, setShowCardForm] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
-
-  // Card Form State
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCVC, setCardCVC] = useState("");
-  const [cardName, setCardName] = useState(user?.name || "");
-  const [cardFormError, setCardFormError] = useState("");
-
   const loadBillingData = async () => {
     try {
       setLoading(true);
@@ -122,20 +115,34 @@ export default function BillingManager({ user, onUserUpdate }: BillingManagerPro
       setError("");
       setSuccess("");
 
-      const res = await api.subscribeToPlan(planId, cycle);
-      setSuccess(`Congratulations! Successfully subscribed to ${res.user.subscription.toUpperCase()} (${cycle}) plan! Your dynamic threshold limit is now updated.`);
+      // 1. Fetch Razorpay Order from backend
+      const orderData = await api.subscribeToPlan(planId, cycle);
       
-      // Reload user profile in main state to reflect updated limits and billing
-      await onUserUpdate();
+      // 2. Launch Razorpay Checkout Modal
+      processRazorpaySubscription(
+        orderData,
+        planId,
+        cycle,
+        async (verifyRes) => {
+          setSuccess(`Congratulations! Successfully subscribed to ${planId.toUpperCase()} (${cycle}) plan! Your payment has been verified.`);
+          
+          // Reload user profile in main state to reflect updated limits and billing
+          await onUserUpdate();
 
-      // Reload transactions
-      const transactionsRes = await api.getTransactions();
-      setInvoices(transactionsRes.transactions || []);
-      
-      setTimeout(() => setSuccess(""), 8000);
+          // Reload transactions
+          const transactionsRes = await api.getTransactions();
+          setInvoices(transactionsRes.transactions || []);
+          
+          setTimeout(() => setSuccess(""), 8000);
+          setSubmitting(null);
+        },
+        (err) => {
+          setError(err.message || "Razorpay subscription payment failed.");
+          setSubmitting(null);
+        }
+      );
     } catch (err: any) {
-      setError(err.message || "Plan subscription adjustment failed.");
-    } finally {
+      setError(err.message || "Failed to initialize Razorpay checkout session.");
       setSubmitting(null);
     }
   };

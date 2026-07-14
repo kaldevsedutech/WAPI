@@ -349,6 +349,25 @@ export const api = {
     return res.json();
   },
 
+  verifyRazorpayPayment: async (verificationData: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+    planId: string;
+    cycle: string;
+  }) => {
+    const res = await fetch("/api/billing/verify-payment", {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(verificationData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Payment verification failed.");
+    }
+    return res.json();
+  },
+
   applyPromoToActiveCycle: async (promoCode: string) => {
     const res = await fetch("/api/billing/apply-promo", {
       method: "POST",

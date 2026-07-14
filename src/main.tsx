@@ -16,13 +16,29 @@ const getApiBaseUrl = () => {
 const originalFetch = window.fetch;
 window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   let url = typeof input === "string" ? input : input.toString();
+  const isApiRequest = url.startsWith("/api/");
   if (url.startsWith("/api/")) {
     const base = getApiBaseUrl();
     if (base) {
       url = base.replace(/\/$/, "") + url;
     }
   }
-  return originalFetch(url, init);
+
+  try {
+    return await originalFetch(url, init);
+  } catch (err) {
+    const shouldRetryRender =
+      isApiRequest &&
+      !url.startsWith("https://wapi-saas.onrender.com") &&
+      !window.location.hostname.includes("localhost") &&
+      !window.location.hostname.includes("127.0.0.1");
+
+    if (shouldRetryRender) {
+      return originalFetch(`https://wapi-saas.onrender.com${typeof input === "string" ? input : input.toString()}`, init);
+    }
+
+    throw err;
+  }
 };
 
 createRoot(document.getElementById('root')!).render(

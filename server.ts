@@ -49,7 +49,14 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow relative requests (same-origin), local dev, or whitelisted domains
-      if (!origin || allowedOrigins.includes(origin) || origin.startsWith("http://localhost:") || origin.includes("onrender.com")) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.startsWith("http://localhost:") ||
+        origin.startsWith("http://127.0.0.1:") ||
+        origin.includes("onrender.com") ||
+        origin.includes("vercel.app")
+      ) {
         callback(null, true);
       } else {
         callback(new Error("Blocked by CORS policy"));

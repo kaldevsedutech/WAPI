@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { api } from "../lib/api";
 import { User } from "../types";
-import { maskPhoneNumber } from "../lib/experienceUtils";
+import { maskEmailAddress, maskPhoneNumber } from "../lib/experienceUtils";
 
 export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
@@ -649,7 +649,7 @@ export default function AdminPanel() {
                   required
                   value={allowedWhatsapp}
                   onChange={(e) => setAllowedWhatsapp(e.target.value)}
-                  placeholder="e.g. +919876543210"
+                  placeholder="e.g. +911234567890"
                   className="block w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 font-mono"
                 />
               </div>
@@ -725,7 +725,7 @@ export default function AdminPanel() {
                       {/* Name / Email */}
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-xs font-bold text-slate-900">{item.name}</div>
-                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">{item.email}</div>
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">{maskEmailAddress(item.email)}</div>
                       </td>
 
                       {/* Subscription level */}
@@ -868,9 +868,9 @@ export default function AdminPanel() {
                           value: {
                             messaging_product: "whatsapp",
                             metadata: { display_phone_number: "+14155552671", phone_number_id: "109283921839" },
-                            contacts: [{ profile: { name: "Simulated Webhook Client" }, wa_id: "+919876543210" }],
+                            contacts: [{ profile: { name: "Simulated Webhook Client" }, wa_id: "+911234567890" }],
                             messages: [{
-                              from: "+919876543210",
+                              from: "+911234567890",
                               id: "wamid.HBgLOTE5ODc2NTQzMjEwFQIAERgSRTkxQkRDMjFFMkFEODVBNEY0AA==",
                               timestamp: Math.floor(Date.now() / 1000).toString(),
                               text: { body: Math.random() > 0.5 ? "Yes, please confirm my subscription!" : "How can I contact sales?" },

@@ -727,7 +727,7 @@ export default function CampaignCreator({ setTab, loadCampaigns, loadStats, user
                     <p className="font-semibold text-slate-500">Suggested CSV Headers Format:</p>
                     <code className="block bg-white p-1.5 rounded mt-1 text-[10px] text-emerald-700 font-mono select-all">
                       customer,city,offer,phone<br />
-                      Ravi,Hyderabad,50%,+919876543210
+                      Ravi,Hyderabad,50%,+911234567890
                     </code>
                   </div>
                 </div>
@@ -1472,7 +1472,7 @@ export default function CampaignCreator({ setTab, loadCampaigns, loadStats, user
                         </td>
                         <td className="py-3 px-4">
                           <input
-                            placeholder="e.g. +919876543210"
+                            placeholder="e.g. +911234567890"
                             value={row.phone}
                             onChange={(e) => updateDirectRow(row.id, { phone: e.target.value })}
                             className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 bg-slate-50/50 font-mono"

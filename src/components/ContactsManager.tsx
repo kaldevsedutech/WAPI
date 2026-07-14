@@ -655,7 +655,7 @@ export default function ContactsManager({ initialGroupId }: ContactsManagerProps
                               required={index === 0}
                               value={row.phone}
                               onChange={(e) => handleCellChange(index, "phone", e.target.value)}
-                              placeholder="e.g. +919876543210"
+                              placeholder="e.g. +911234567890"
                               className="w-full px-2 py-1.5 border border-slate-150 focus:border-emerald-500 focus:outline-none rounded-lg text-xs font-mono"
                             />
                           </td>

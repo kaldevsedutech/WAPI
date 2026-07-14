@@ -232,7 +232,7 @@ export default function WhatsAppConnector({ user, session, loadSession, updateUs
                     type="text"
                     value={scannedNumber}
                     onChange={(e) => setScannedNumber(e.target.value)}
-                    placeholder="e.g. +919876543210"
+                    placeholder="e.g. +911234567890"
                     className="block w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-mono"
                   />
                 </div>

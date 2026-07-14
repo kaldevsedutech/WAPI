@@ -52,3 +52,14 @@ export function maskPhoneNumber(phone: string | null | undefined): string {
   
   return cleaned;
 }
+
+export function maskEmailAddress(email: string | null | undefined): string {
+  if (!email) return "";
+  const [local, domain] = email.trim().split("@");
+  if (!local || !domain) return email.trim();
+
+  const visibleLocal = local.length <= 2 ? local[0] : `${local.slice(0, 2)}***${local.slice(-1)}`;
+  const [domainName, ...domainParts] = domain.split(".");
+  const maskedDomain = domainName.length <= 2 ? `${domainName[0]}***` : `${domainName.slice(0, 2)}***`;
+  return `${visibleLocal}@${maskedDomain}${domainParts.length ? `.${domainParts.join(".")}` : ""}`;
+}

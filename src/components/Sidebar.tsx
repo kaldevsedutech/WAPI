@@ -18,7 +18,7 @@ import {
   HelpCircle
 } from "lucide-react";
 import { WhatsAppSession } from "../types";
-import { isFeatureVisible, ExperienceMode, maskPhoneNumber } from "../lib/experienceUtils";
+import { isFeatureVisible, ExperienceMode, maskEmailAddress, maskPhoneNumber } from "../lib/experienceUtils";
 
 interface SidebarProps {
   currentTab: string;
@@ -174,7 +174,7 @@ export default function Sidebar({ currentTab, setTab, user, session, onLogout, o
       <div className="p-4 border-t border-slate-800 flex items-center justify-between">
         <div className="min-w-0">
           <p className="text-xs font-bold text-white truncate">{user?.name}</p>
-          <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
+          <p className="text-[10px] text-slate-500 truncate">{maskEmailAddress(user?.email)}</p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <button

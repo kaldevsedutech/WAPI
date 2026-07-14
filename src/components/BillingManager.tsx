@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { api } from "../lib/api";
 import { processRazorpaySubscription } from "../lib/razorpay";
+import { maskEmailAddress } from "../lib/experienceUtils";
 
 interface BillingManagerProps {
   user: any;
@@ -87,6 +88,11 @@ export default function BillingManager({ user, onUserUpdate }: BillingManagerPro
   });
   const [autoRenew, setAutoRenew] = useState(true);
   const [showCardForm, setShowCardForm] = useState(false);
+  const [cardFormError, setCardFormError] = useState("");
+  const [cardName, setCardName] = useState(user?.name || "");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCVC, setCardCVC] = useState("");
   const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
   const loadBillingData = async () => {
     try {
@@ -679,7 +685,7 @@ export default function BillingManager({ user, onUserUpdate }: BillingManagerPro
                 <div>
                   <span className="block text-[10px] uppercase font-bold text-slate-400">Billed To</span>
                   <p className="font-bold text-slate-800 mt-0.5">{paymentMethod.name}</p>
-                  <p className="text-slate-500 font-mono text-[10px]">{user?.email || "sfayazmr@gmail.com"}</p>
+                  <p className="text-slate-500 font-mono text-[10px]">{maskEmailAddress(user?.email) || "billing account"}</p>
                 </div>
                 <div className="text-right">
                   <span className="block text-[10px] uppercase font-bold text-slate-400">Transaction Date</span>

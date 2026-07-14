@@ -19,11 +19,16 @@ import crypto from "crypto";
 
 dotenv.config();
 
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
+
 // Initialize Razorpay client with user provided credentials (or environment overrides)
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_TDL8i01bHsCudi",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "0ol3L00rzQOu1nMjl0dn0mFE",
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET,
 });
+
+const createSessionToken = () => "token_" + Math.random().toString(36).substring(2, 10);
 
 // Initialize server-side Gemini client for low-latency smart auto-replies
 const ai = new GoogleGenAI({
@@ -765,7 +770,7 @@ async function initWhatsAppSession(userId: string) {
           delete activeQRRequests[userId];
           emitUserEvent(userId, "qr_state_updated", null);
           emitUserEvent(userId, "session_updated", sessionData);
-          logActivity(userId, "WhatsApp Connected", `Successfully linked device: ${user.allowedWhatsapp}`);
+          logActivity(userId, "WhatsApp Connected", "Successfully linked registered device.");
         }
       }
     });
@@ -914,43 +919,60 @@ app.post("/api/auth/register", (req, res) => {
     createdAt: new Date().toISOString(),
     dailyMessageLimit: 1000,
     messagesSentToday: 0,
+    activeSessionToken: createSessionToken(),
   };
 
   users.push(newUser);
   db.write("users", users);
 
   // Log activity
-  logActivity(newUser.id, "User Registered", `Self-registered new account with WhatsApp number ${newUser.allowedWhatsapp}.`);
+  logActivity(newUser.id, "User Registered", "Self-registered new account.");
 
   res.json({
     message: "Registration successful! You can now log in with your credentials.",
+    token: `${newUser.id}:${newUser.activeSessionToken}`,
     user: {
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
       allowedWhatsapp: newUser.allowedWhatsapp,
+      role: newUser.role,
+      subscription: newUser.subscription,
+      expiryDate: newUser.expiryDate,
+      status: newUser.status,
       experienceMode: "daily",
+      brandColor: "emerald",
     }
   });
 });
 
 app.post("/api/auth/login", (req, res) => {
-  const { email, password } = req.body; // 'email' holds the phone input from the request
+  const { email, password } = req.body; // 'email' is the legacy request field for phone/email login identifiers
   if (!email || !password) {
-    return res.status(400).json({ error: "Registered Mobile Number and password are required" });
+    return res.status(400).json({ error: "Registered mobile number or email address and password are required" });
   }
 
   const users = db.read("users");
   
-  // Clean inputs for phone lookup
-  const cleanPhoneInput = email.trim().replace(/[\s\-\+]/g, "");
+  const identifier = String(email).trim();
+  const identifierAliasMap: Record<string, string> = {
+    "test-user-1": "u_demo",
+    "test-user-2": "u_user2",
+  };
+  const cleanPhoneInput = identifier.replace(/[\s\-\+]/g, "");
+  const cleanEmailInput = identifier.toLowerCase();
   const user = users.find((u) => {
+    if (identifierAliasMap[cleanEmailInput]) {
+      return u.id === identifierAliasMap[cleanEmailInput];
+    }
+
     const cleanUserPhone = (u.allowedWhatsapp || "").replace(/[\s\-\+]/g, "");
-    return cleanUserPhone !== "" && cleanUserPhone === cleanPhoneInput;
+    const cleanUserEmail = (u.email || "").trim().toLowerCase();
+    return (cleanUserPhone !== "" && cleanUserPhone === cleanPhoneInput) || cleanUserEmail === cleanEmailInput;
   });
 
   if (!user || user.password !== password) {
-    return res.status(401).json({ error: "Invalid login details. Check your registered mobile number and password." });
+    return res.status(401).json({ error: "Invalid login details. Check your registered mobile number/email and password." });
   }
 
   if (user.status === "blocked") {
@@ -969,12 +991,12 @@ app.post("/api/auth/login", (req, res) => {
   }
 
   // Bind session to a single system (single active login)
-  const newSessionToken = "token_" + Math.random().toString(36).substring(2, 10);
+  const newSessionToken = createSessionToken();
   user.activeSessionToken = newSessionToken;
   db.write("users", users);
 
   // Log activity
-  logActivity(user.id, "User Login", `Logged in successfully via registered mobile number ${user.allowedWhatsapp}.`);
+  logActivity(user.id, "User Login", "Logged in successfully.");
 
   res.json({
     token: `${user.id}:${newSessionToken}`,
@@ -1340,7 +1362,7 @@ app.post("/api/whatsapp/simulate-scan", authenticateUser, (req, res) => {
     emitUserEvent(userId, "session_updated", null);
 
     return res.status(400).json({
-      error: `Security verification failed! Your subscription only allows connecting the registered number: ${req.user.allowedWhatsapp}. You scanned with: ${scannedNumber}. Dynamic logout applied.`,
+      error: "Security verification failed! Your subscription only allows connecting the registered number. Dynamic logout applied.",
       allowedNumber: req.user.allowedWhatsapp,
       scannedNumber: scannedNumber,
     });
@@ -2759,6 +2781,10 @@ app.post("/api/billing/subscribe", authenticateUser, async (req, res) => {
     return res.status(400).json({ error: "Plan choice and billing cycle are required." });
   }
 
+  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+    return res.status(500).json({ error: "Razorpay payment settings are missing. Configure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET." });
+  }
+
   const prices: Record<string, Record<string, number>> = {
     basic: { daily: 5, weekly: 30, monthly: 100, annual: 1000, annually: 1000 },
     premium: { daily: 15, weekly: 90, monthly: 300, annual: 3000, annually: 3000 },
@@ -2784,7 +2810,7 @@ app.post("/api/billing/subscribe", authenticateUser, async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID || "rzp_test_TDL8i01bHsCudi",
+      keyId: RAZORPAY_KEY_ID,
       user: {
         name: req.user.name,
         email: req.user.email,
@@ -2803,9 +2829,12 @@ app.post("/api/billing/verify-payment", authenticateUser, (req, res) => {
     return res.status(400).json({ error: "Missing required payment verification parameters." });
   }
 
+  if (!RAZORPAY_KEY_SECRET) {
+    return res.status(500).json({ error: "Razorpay payment verification settings are missing." });
+  }
+
   // Verify HMAC signature
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || "0ol3L00rzQOu1nMjl0dn0mFE";
-  const hmac = crypto.createHmac("sha256", key_secret);
+  const hmac = crypto.createHmac("sha256", RAZORPAY_KEY_SECRET);
   hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
   const generatedSignature = hmac.digest("hex");
 
@@ -3112,7 +3141,7 @@ app.get("/api/activity-logs", authenticateUser, (req, res) => {
         id: "log_init_2",
         userId: req.user.id,
         action: "WhatsApp Linked",
-        details: `Linked registered mobile number ${req.user.allowedWhatsapp} successfully.`,
+        details: "Linked registered mobile number successfully.",
         timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
       },
       {

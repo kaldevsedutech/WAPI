@@ -39,7 +39,7 @@ export default function AutoReplyRules() {
 
   // Simulator State
   const [testMessage, setTestMessage] = useState("");
-  const [testPhone, setTestPhone] = useState("+919876543210");
+  const [testPhone, setTestPhone] = useState("+911234567890");
   const [simLogs, setSimLogs] = useState<Array<{ sender: "user" | "bot" | "sys"; text: string; time: string }>>([
     { sender: "sys", text: "Auto-reply tester online. Send messages matching your keywords to test.", time: new Date().toLocaleTimeString() }
   ]);

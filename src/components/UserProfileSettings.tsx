@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X, User, Shield, Calendar, Activity, RefreshCw, Smartphone, Sparkles, AlertCircle, LayoutTemplate, Palette, Check } from "lucide-react";
 import { api } from "../lib/api";
+import { maskPhoneNumber } from "../lib/experienceUtils";
 
 interface UserProfileSettingsProps {
   user: any;
@@ -124,7 +125,7 @@ export default function UserProfileSettings({ user, onClose, onUserUpdate }: Use
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase">Registered Mobile</p>
-                  <p className="text-sm font-mono text-slate-800">{user?.allowedWhatsapp}</p>
+                  <p className="text-sm font-mono text-slate-800">{maskPhoneNumber(user?.allowedWhatsapp)}</p>
                 </div>
               </div>
 

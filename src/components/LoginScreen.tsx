@@ -292,16 +292,30 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   const [simulatedCardCVV, setSimulatedCardCVV] = useState("123");
   const [simulatedUPIId, setSimulatedUPIId] = useState("user@okaxis");
 
+  const isValidLoginIdentifier = (value: string) => {
+    const trimmed = value.trim();
+    if (trimmed.includes("@")) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+    }
+
+    if (/^test-user-[12]$/i.test(trimmed)) {
+      return true;
+    }
+
+    const digits = trimmed.replace(/\D/g, "");
+    return digits.length >= 8 && digits.length <= 15;
+  };
+
   const isValidFormat = (num: string) => {
     const digits = num.replace(/\D/g, "");
     return digits.length >= 8 && digits.length <= 15;
   };
 
   const handlePhoneChange = (val: string, type: "login" | "register") => {
-    const cleaned = val.replace(/[^0-9\s\-\+\(\)]/g, "");
     if (type === "login") {
-      setPhone(cleaned);
+      setPhone(val.replace(/[^a-zA-Z0-9@._\s\-\+\(\)]/g, ""));
     } else {
+      const cleaned = val.replace(/[^0-9\s\-\+\(\)]/g, "");
       setRegPhone(cleaned);
     }
   };
@@ -314,8 +328,8 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       return;
     }
 
-    if (!isValidFormat(phone)) {
-      setError("Please enter a valid registered mobile number (must be between 8 and 15 digits, e.g. +919876543210).");
+    if (!isValidLoginIdentifier(phone)) {
+      setError("Please enter a valid registered mobile number or email address.");
       return;
     }
 
@@ -339,6 +353,43 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       onLoginSuccess(data.token, data.user);
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const registerUserAndLogin = async (_planId: string) => {
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    try {
+      const fullPhone = regCountryCode + regPhone.trim().replace(/\D/g, "");
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: regName.trim(),
+          email: regEmail.trim(),
+          password: regPassword,
+          allowedWhatsapp: fullPhone,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Trial registration failed.");
+      }
+
+      if (!data.token) {
+        throw new Error("Registration succeeded but no login session was returned.");
+      }
+
+      setSuccess("Trial account registered successfully!");
+      localStorage.setItem("wapi_token", data.token);
+      onLoginSuccess(data.token, data.user);
+    } catch (err: any) {
+      setError(err.message || "Failed to activate trial account.");
     } finally {
       setLoading(false);
     }
@@ -1219,7 +1270,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      setPhone("+919876543210");
+                      setPhone("test-user-1");
                       setPassword("user1");
                       setError("");
                       setSuccess("");
@@ -1227,7 +1278,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all cursor-pointer shadow-sm group"
                   >
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Test User 1 (+91 98765 43210)</p>
+                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Test User 1</p>
                       <p className="text-[10px] text-slate-400 font-mono">Password: user1</p>
                     </div>
                     <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-2 py-0.5 rounded uppercase">Fill</span>
@@ -1236,7 +1287,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      setPhone("+919988776655");
+                      setPhone("test-user-2");
                       setPassword("user2");
                       setError("");
                       setSuccess("");
@@ -1244,7 +1295,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all cursor-pointer shadow-sm group"
                   >
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Test User 2 (+91 99887 76655)</p>
+                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Test User 2</p>
                       <p className="text-[10px] text-slate-400 font-mono">Password: user2</p>
                     </div>
                     <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-2 py-0.5 rounded uppercase">Fill</span>
@@ -1287,7 +1338,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                             value={forgotPhoneOrEmail}
                             onChange={(e) => setForgotPhoneOrEmail(e.target.value)}
                             className="block w-full pl-11 pr-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 text-xs"
-                            placeholder="e.g. +919876543210 or admin@gmail.com"
+                            placeholder="Registered phone or email"
                           />
                         </div>
                         <p className="mt-1 text-[10px] text-slate-400 leading-relaxed">
@@ -1481,7 +1532,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 <form className="space-y-5" onSubmit={handleLoginSubmit}>
                   <div>
                     <label htmlFor="phone" className="block text-xs font-semibold text-slate-700 mb-1">
-                      Registered Mobile Number
+                      Registered Mobile Number or Email
                     </label>
                     <div className="relative rounded-xl shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -1495,11 +1546,11 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                         value={phone}
                         onChange={(e) => handlePhoneChange(e.target.value, "login")}
                         className="block w-full pl-11 pr-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400 text-xs font-mono"
-                        placeholder="e.g. +919876543210"
+                        placeholder="Registered phone or email"
                       />
                     </div>
                     <p className="mt-1 text-[10px] text-slate-400">
-                      Include country code, e.g. +919876543210
+                      Use your registered WhatsApp number with country code, or your account email.
                     </p>
                   </div>
 

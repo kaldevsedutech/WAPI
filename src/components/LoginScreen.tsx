@@ -290,6 +290,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   // Simulated Payment States
   const [paymentMethod, setPaymentMethod] = useState<"card" | "upi" | "netbanking" | "wallet">("card");
   const [checkoutStep, setCheckoutStep] = useState<"form" | "paying" | "success">("form");
+  const [pendingCheckoutAccount, setPendingCheckoutAccount] = useState<any | null>(null);
   const [simulatedCardNumber, setSimulatedCardNumber] = useState("4111 2222 3333 4444");
   const [simulatedCardExpiry, setSimulatedCardExpiry] = useState("12/28");
   const [simulatedCardCVV, setSimulatedCardCVV] = useState("123");
@@ -348,6 +349,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
     setError("");
     setSuccess("");
+    setPendingCheckoutAccount(null);
     setLoading(true);
 
     try {
@@ -418,21 +420,25 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setError("");
     setCheckoutStep("paying");
     try {
-      const fullPhone = regCountryCode + regPhone.trim().replace(/\D/g, "");
-      const regRes = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: regName.trim(),
-          email: regEmail.trim(),
-          password: regPassword,
-          allowedWhatsapp: fullPhone
-        })
-      });
+      let regData = pendingCheckoutAccount;
+      if (!regData?.token) {
+        const fullPhone = regCountryCode + regPhone.trim().replace(/\D/g, "");
+        const regRes = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: regName.trim(),
+            email: regEmail.trim(),
+            password: regPassword,
+            allowedWhatsapp: fullPhone
+          })
+        });
 
-      const regData = await readApiResponse(regRes);
-      if (!regRes.ok) {
-        throw new Error(regData.error || "Registration profile creation failed.");
+        regData = await readApiResponse(regRes);
+        if (!regRes.ok) {
+          throw new Error(regData.error || "Registration profile creation failed.");
+        }
+        setPendingCheckoutAccount(regData);
       }
 
       // Fetch Razorpay Order from backend
@@ -509,7 +515,14 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         },
       };
 
-      const rzp = new RazorpayConstructor(options);
+      const rzp = new RazorpayConstructor({
+        ...options,
+        modal: {
+          ondismiss: function () {
+            setCheckoutStep("form");
+          }
+        }
+      });
       rzp.on("payment.failed", function (response: any) {
         setError(response.error.description || "Razorpay transaction failed.");
         setCheckoutStep("form");
@@ -1803,6 +1816,13 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
               {checkoutStep === "form" && (
                 <div className="p-6 space-y-6 animate-fade-in">
+                  {error && (
+                    <div className="rounded-xl bg-rose-50 p-4 border border-rose-100 text-xs text-rose-700 font-semibold flex gap-2">
+                      <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
                   {/* Order summary */}
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3 text-xs">
                     <div className="flex items-center justify-between">
@@ -1830,8 +1850,10 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
                   <div className="pt-2">
                     <button 
+                      type="button"
                       onClick={handleRazorpayCheckout}
-                      className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-200 cursor-pointer flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+                      disabled={checkoutStep === "paying"}
+                      className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-200 cursor-pointer flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
                     >
                       <ShieldCheck className="w-4 h-4" />
                       <span>Proceed to Secure Payment</span>
@@ -1945,7 +1967,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <span className="text-sm font-extrabold text-white">WAPIMI</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Enterprise WhatsApp marketing automation software. Build contact groups, schedule campaigns, auto-reply with AI, and track receipts.
+                Enterprise WhatsApp marketing automation software. Build contact groups, schedule campaigns, send predefined auto-replies, and track receipts.
             </p>
           </div>
 

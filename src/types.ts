@@ -76,7 +76,7 @@ export interface AutoReplyRule {
   matchType: 'equals' | 'contains' | 'starts_with';
   replyText: string;
   aiEnabled: boolean;
-  aiPrompt?: string; // Context for Gemini Flash
+  aiPrompt?: string; // Legacy field retained for imported rule compatibility
   isActive: boolean;
   createdAt: string;
 }

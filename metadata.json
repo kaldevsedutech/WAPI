@@ -2,7 +2,5 @@
   "name": "Remix: WhatsApp Marketing Automation Platform",
   "description": "An advanced WhatsApp Marketing SaaS featuring user campaigns, dynamic CSV templates, scheduled messaging, contact groups, contact duplicates helper, campaign reports with delivery and read receipts, live simulated WhatsApp session verification, and a 2-way inbox.",
   "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "majorCapabilities": []
 }

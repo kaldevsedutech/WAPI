@@ -8,7 +8,6 @@ import pino from "pino";
 import qrcodeLib from "qrcode";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
-import { GoogleGenAI } from "@google/genai";
 import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import cors from "cors";
@@ -29,16 +28,6 @@ const razorpay = new Razorpay({
 });
 
 const createSessionToken = () => "token_" + Math.random().toString(36).substring(2, 10);
-
-// Initialize server-side Gemini client for low-latency smart auto-replies
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || "",
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    }
-  }
-});
 
 const app = express();
 app.set("trust proxy", 1);
@@ -663,7 +652,7 @@ async function initWhatsAppSession(userId: string) {
               db.write("messages", currentMessages);
               emitUserEvent(userId, "new_message", inboundMsg);
 
-              // Trigger rule-based and AI-powered auto-replies
+              // Trigger rule-based auto-replies
               evaluateAutoReply(userId, phone, name, textContent);
             }
           }
@@ -1476,78 +1465,47 @@ app.delete("/api/contact-groups/:id", authenticateUser, (req, res) => {
 app.get("/api/campaigns/smart-insights", authenticateUser, async (req, res) => {
   try {
     const campaigns = db.read("campaigns").filter(c => c.userId === req.user.id);
-    
-    const campaignSummary = campaigns.map(c => ({
-      title: c.title,
-      totalMessages: c.totalMessages,
-      sent: c.sent,
-      failed: c.failed,
-      status: c.status,
-      isABTest: c.isABTest || false,
-      createdAt: c.createdAt
-    }));
 
-    let insights: any[] = [];
+    const totals = campaigns.reduce(
+      (acc, c) => {
+        acc.total += Number(c.totalMessages || 0);
+        acc.sent += Number(c.sent || 0);
+        acc.failed += Number(c.failed || 0);
+        if (c.isABTest) acc.abTests += 1;
+        return acc;
+      },
+      { total: 0, sent: 0, failed: 0, abTests: 0 }
+    );
+    const failureRate = totals.total > 0 ? Math.round((totals.failed / totals.total) * 100) : 0;
 
-    if (process.env.GEMINI_API_KEY) {
-      try {
-        const prompt = `You are an elite marketing intelligence engine for WAPI, a professional WhatsApp message broadcasting and CRM automation suite.
-Analyze the user's historical campaign statistics and write 3 highly actionable marketing recommendations.
-Provide your response strictly as a JSON array of objects, with no markdown code block surrounding it, just pure JSON.
-Each object must have these fields:
-- id: string (unique identifier like 'opt_send_time')
-- title: string (short, punchy title, e.g. "Optimize Send Timing")
-- message: string (detailed, actionable suggestion, e.g. "Try sending your 'Diwali Fest Offer Promo' campaign at 10 AM for 15% better engagement based on historical delivery peaks.")
-- metric: string (short metric impact, e.g. "+15% Engagement Lift")
-- priority: 'high' | 'medium' | 'low'
-- type: 'engagement' | 'delivery' | 'timing' | 'ab_test'
-
-Here are the user's active/completed campaigns:
-${JSON.stringify(campaignSummary, null, 2)}`;
-
-        const response = await ai.models.generateContent({
-          model: "gemini-3.5-flash",
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json"
-          }
-        });
-
-        const text = response.text?.trim() || "";
-        insights = JSON.parse(text);
-      } catch (geminiError) {
-        console.error("Gemini smart insights error, falling back to static intelligence:", geminiError);
+    const insights = [
+      {
+        id: "opt_timing",
+        title: "Optimize Dispatch Timing",
+        message: "Schedule regular broadcasts for weekday morning windows and compare delivery results against evening sends before scaling the next campaign.",
+        metric: "+15% Read Rate",
+        priority: "high",
+        type: "timing"
+      },
+      {
+        id: "opt_delivery",
+        title: "Watch Delivery Health",
+        message: failureRate > 5
+          ? `Your current failure rate is about ${failureRate}%. Clean duplicate or invalid numbers before the next broadcast.`
+          : "Delivery health is stable. Keep cleaning uploaded lists and removing duplicate recipient numbers before each send.",
+        metric: `${failureRate}% Failure Rate`,
+        priority: failureRate > 5 ? "high" : "medium",
+        type: "delivery"
+      },
+      {
+        id: "opt_engagement",
+        title: "Use Rule-Based Replies",
+        message: "Add keyword replies for pricing, catalog, delivery, support, and refund questions so customers receive instant predefined answers.",
+        metric: `${db.read("auto_reply_rules").filter(r => r.userId === req.user.id && r.isActive).length} Active Rules`,
+        priority: "high",
+        type: "engagement"
       }
-    }
-
-    if (!insights || !Array.isArray(insights) || insights.length === 0) {
-      insights = [
-        {
-          id: "opt_timing",
-          title: "Optimize Dispatch Timing",
-          message: "Try sending marketing broadcast campaigns at 10:00 AM on weekdays. Delivery patterns indicate a 15% higher reading rate in the morning hours.",
-          metric: "+15% Read Rate",
-          priority: "high",
-          type: "timing"
-        },
-        {
-          id: "opt_abtest",
-          title: "Scale A/B Variant Testing",
-          message: "Ensure to include at least 2 distinct template variations. Variant campaigns historically demonstrate a 20% lower failure rate as message distribution spreads across diverse patterns.",
-          metric: "-20% Block Rate",
-          priority: "medium",
-          type: "ab_test"
-        },
-        {
-          id: "opt_engagement",
-          title: "Improve Template Engagement",
-          message: "Incorporate personalized customer names directly inside templates (e.g. using {{Name}} placeholders). Broadcasters using personalization report a 35% higher response rate.",
-          metric: "+35% Response Lift",
-          priority: "high",
-          type: "engagement"
-        }
-      ];
-    }
+    ];
 
     res.json({ insights });
   } catch (error: any) {
@@ -2126,7 +2084,7 @@ app.post("/api/chats/simulate-receive", authenticateUser, (req, res) => {
   messages.push(incoming);
   db.write("messages", messages);
 
-  // TRIGGER AUTO REPLY RULES ENGINE (Both keyword & Gemini Flash support)
+  // TRIGGER AUTO REPLY RULES ENGINE
   evaluateAutoReply(req.user.id, phone, name || phone, message);
 
   res.json({ message: "Simulated inbound text appended to Inbox.", incomingMessage: incoming });
@@ -2576,7 +2534,7 @@ function triggerSimulatedCustomerReply(userId: string, phone: string, name: stri
   }, 3500);
 }
 
-// Evaluator function for rule-based and AI-powered auto-replies
+// Evaluator function for rule-based auto-replies
 async function evaluateAutoReply(userId: string, phone: string, name: string, userMessage: string) {
   // Stagger reply slightly to feel fast but realistic
   setTimeout(async () => {
@@ -2609,32 +2567,7 @@ async function evaluateAutoReply(userId: string, phone: string, name: string, us
         return;
       }
 
-      let replyText = matchedRule.replyText;
-
-      // If AI mode is enabled for the matched keyword, invoke server-side Gemini 3.1 Flash Lite
-      if (matchedRule.aiEnabled) {
-        try {
-          if (process.env.GEMINI_API_KEY) {
-            const systemInst = matchedRule.aiPrompt || "You are an automated support agent on WhatsApp. Answer the message in max 2 sentences.";
-            const response = await ai.models.generateContent({
-              model: "gemini-3.1-flash-lite",
-              contents: `Customer query: "${userMessage}"`,
-              config: {
-                systemInstruction: systemInst,
-                temperature: 0.7,
-              }
-            });
-            if (response && response.text) {
-              replyText = response.text.trim();
-            }
-          } else {
-            replyText = `[AI Low-Latency Response] Thank you for asking about "${userMessage}". (Configure GEMINI_API_KEY in Secrets panel to connect our live Gemini Flash agent!)`;
-          }
-        } catch (aiErr) {
-          console.error("Gemini Flash API Error:", aiErr);
-          replyText = `Thank you for your inquiry regarding "${userMessage}". We have registered your support ticket and will reply soon.`;
-        }
-      }
+      const replyText = matchedRule.replyText || "Thanks for your message. Our team will get back to you shortly.";
 
       const messages = db.read("messages");
       const replyMsg = {
@@ -2756,7 +2689,7 @@ app.get("/api/billing/plans", authenticateUser, (req, res) => {
         monthly: 300,
         annual: 3000
       },
-      features: ["AI-powered smart replies (Flash)", "Birthday wishes automation", "Message scheduling dashboard", "Advanced Engagement Analytics Charts"]
+      features: ["Rule-based smart replies", "Birthday wishes automation", "Message scheduling dashboard", "Advanced Engagement Analytics Charts"]
     },
     {
       id: "business",
@@ -3203,7 +3136,7 @@ app.get("/api/faq-data", (req, res) => {
       {
         category: "general",
         question: "What is WAPIMI and how does it work?",
-        answer: "WAPIMI is a high-speed WhatsApp marketing broadcast and conversational automation platform. It allows businesses to connect their WhatsApp numbers securely by scanning a dynamic QR code. Once linked, you can import client contact groups, design high-impact campaigns with custom placeholders, manage real-time dual-inbox messages, configure AI-powered auto-replies, and view delivery metrics in real-time."
+        answer: "WAPIMI is a high-speed WhatsApp marketing broadcast and conversational automation platform. It allows businesses to connect their WhatsApp numbers securely by scanning a dynamic QR code. Once linked, you can import client contact groups, design high-impact campaigns with custom placeholders, manage real-time dual-inbox messages, configure predefined auto-replies, and view delivery metrics in real-time."
       },
       {
         category: "billing",

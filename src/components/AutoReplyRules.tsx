@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import {
   Sparkles,
   Plus,
@@ -68,8 +68,9 @@ export default function AutoReplyRules() {
       setError("Keyword is required");
       return;
     }
-    if (!aiEnabled && !replyText.trim()) {
-      setError("Predefined reply text is required when AI support is disabled");
+    const savedReplyText = aiEnabled ? aiPrompt.trim() : replyText.trim();
+    if (!savedReplyText) {
+      setError("Auto-reply message is required");
       return;
     }
 
@@ -79,9 +80,9 @@ export default function AutoReplyRules() {
       await api.createAutoReplyRule({
         keyword: keyword.trim(),
         matchType,
-        replyText: aiEnabled ? "" : replyText.trim(),
-        aiEnabled,
-        aiPrompt: aiEnabled ? aiPrompt.trim() : ""
+        replyText: savedReplyText,
+        aiEnabled: false,
+        aiPrompt: ""
       });
       
       setSuccess("Auto-reply rule added successfully!");
@@ -176,15 +177,15 @@ export default function AutoReplyRules() {
           importedRules.push({
             keyword: rawKeyword,
             matchType: validatedMatchType,
-            replyText: rawReply,
-            aiEnabled: rawAiEnabled,
-            aiPrompt: rawAiPrompt,
+            replyText: rawReply || rawAiPrompt,
+            aiEnabled: false,
+            aiPrompt: "",
             isActive: true
           });
         }
 
         if (importedRules.length === 0) {
-          throw new Error("No valid keyword rules detected in the CSV. Formats: keyword,matchType,replyText,aiEnabled,aiPrompt");
+          throw new Error("No valid keyword rules detected in the CSV. Format: keyword,matchType,replyText");
         }
 
         const res = await (api as any).importAutoReplyRulesBulk(importedRules);
@@ -266,7 +267,7 @@ export default function AutoReplyRules() {
               <span>Smart Auto-Replies</span>
             </h1>
             <p className="text-sm text-slate-500 mt-1">
-              Define rule-based keyword triggers or employ live AI agents via Gemini Flash for low-latency auto-completions.
+              Define keyword triggers that send predefined or user-written WhatsApp responses instantly.
             </p>
           </div>
           <div className="flex items-center gap-3 self-start md:self-auto">
@@ -314,13 +315,13 @@ export default function AutoReplyRules() {
             <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 font-mono text-[11px] text-slate-600 space-y-1">
               <p className="font-bold text-slate-700">Expected Columns Header (Optional):</p>
               <p className="bg-slate-100/60 p-2 rounded text-slate-800 font-bold overflow-x-auto">
-                keyword,matchType,replyText,aiEnabled,aiPrompt
+                keyword,matchType,replyText
               </p>
               <p className="font-bold text-slate-700 pt-2">Example Lines:</p>
               <p className="bg-slate-100/60 p-2 rounded text-slate-500 overflow-x-auto leading-relaxed">
-                "pricing", "contains", "Our basic plan is $19/mo.", "false", ""<br />
-                "support", "equals", "Standard support hours are 9am-5pm EST.", "false", ""<br />
-                "help", "contains", "", "true", "You are a helpful customer assistant. Advise them to wait for live staff."
+                "pricing", "contains", "Our basic plan is available monthly."<br />
+                "support", "equals", "Standard support hours are 9am-5pm."<br />
+                "catalog", "contains", "Thanks for your interest. We will share the product catalog shortly."
               </p>
             </div>
 
@@ -393,7 +394,7 @@ export default function AutoReplyRules() {
                 </select>
               </div>
 
-              {/* AI Enable Toggle */}
+              {/* Reply Mode */}
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Execution Mode</label>
                 <div className="flex items-center gap-3 py-2">
@@ -410,31 +411,31 @@ export default function AutoReplyRules() {
                   </button>
                   <div>
                     <span className="text-xs font-bold text-slate-700 block">
-                      {aiEnabled ? "AI Agent Support (Flash)" : "Predefined Static Reply"}
+                      {aiEnabled ? "Guided Rule Reply" : "Predefined Static Reply"}
                     </span>
                     <span className="text-[10px] text-slate-400">
-                      {aiEnabled ? "Dynamic response formulations" : "Sends predefined text template"}
+                      {aiEnabled ? "Uses your saved instruction text as the reply" : "Sends predefined text template"}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Response Form Content (AI Prompt vs Reply Text) */}
+            {/* Response Form Content */}
             {aiEnabled ? (
               <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/50 space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800">
                   <Cpu className="w-4 h-4 text-emerald-600" />
-                  <span>Configure Gemini Flash Agent Prompt Instructions</span>
+                  <span>Configure Saved Response Instructions</span>
                 </div>
                 <textarea
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
-                  placeholder="e.g. You are a professional sales consultant. Our standard price is $19/mo. Keep the reply extremely helpful and limit to max 2 sentences."
+                  placeholder="e.g. Thanks for contacting us. Please share your requirement and our team will respond during business hours."
                   className="w-full h-24 p-3 border border-emerald-200/60 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
                 />
                 <p className="text-[10px] text-emerald-600/80">
-                  ⚡ Gemini Flash Lite is used on the backend. Responses are ultra fast, secure, and formulated using context prompts.
+                  This app sends only saved rule responses. No external AI API is required.
                 </p>
               </div>
             ) : (
@@ -513,16 +514,16 @@ export default function AutoReplyRules() {
                           </span>
                           
                           {rule.aiEnabled && (
-                            <span className="bg-purple-50 text-purple-700 text-[9px] px-2 py-0.5 rounded-full font-bold border border-purple-100 flex items-center gap-0.5">
+                            <span className="bg-emerald-50 text-emerald-700 text-[9px] px-2 py-0.5 rounded-full font-bold border border-emerald-100 flex items-center gap-0.5">
                               <Cpu className="w-3 h-3" />
-                              <span>AI GENERATED</span>
+                              <span>SAVED REPLY</span>
                             </span>
                           )}
                         </div>
 
                         {rule.aiEnabled ? (
                           <p className="text-xs text-slate-500 italic font-medium truncate max-w-md">
-                            Prompt context: {rule.aiPrompt || "Standard support agent mode"}
+                            Reply: {rule.replyText || rule.aiPrompt || "Thanks for your message. Our team will get back to you shortly."}
                           </p>
                         ) : (
                           <p className="text-xs text-slate-600 font-medium truncate max-w-md">
@@ -648,3 +649,4 @@ export default function AutoReplyRules() {
     </div>
   );
 }
+

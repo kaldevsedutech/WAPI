@@ -659,9 +659,9 @@ export default function DashboardOverview({ user, setTab, onQuickAddContact, onO
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 font-sans">
-                <span>WAPI Smart AI Marketing Insights</span>
+                <span>WAPI Marketing Insights</span>
               </h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">Real-time campaigns analysis and throughput optimization engine powered by Gemini AI.</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">Rule-based campaign analysis and throughput optimization recommendations.</p>
             </div>
           </div>
           <button
@@ -671,7 +671,7 @@ export default function DashboardOverview({ user, setTab, onQuickAddContact, onO
             className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-xl text-xs font-semibold cursor-pointer transition-colors flex items-center gap-1.5 self-start sm:self-auto shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${insightsLoading ? "animate-spin" : ""}`} />
-            <span>Refresh AI Audit</span>
+            <span>Refresh Audit</span>
           </button>
         </div>
 
@@ -679,7 +679,7 @@ export default function DashboardOverview({ user, setTab, onQuickAddContact, onO
           <div className="py-12 text-center text-xs text-slate-400 animate-pulse">
             <div className="flex items-center justify-center gap-2 mb-2">
               <RefreshCw className="w-4 h-4 animate-spin text-emerald-600" />
-              <span className="font-semibold text-slate-600">Gemini API is parsing historical dispatch statistics...</span>
+              <span className="font-semibold text-slate-600">Reviewing historical dispatch statistics...</span>
             </div>
             <p className="text-[10px] text-slate-400 max-w-md mx-auto">Evaluating delivery success, conversion dropouts, optimal broadcast times, and A/B template variance logs.</p>
           </div>

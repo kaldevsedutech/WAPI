@@ -680,7 +680,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <span className="text-emerald-600">Automation Suite</span>
                   </h1>
                   <p className="text-base text-slate-500 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                    A secure enterprise SaaS suite for launching scheduled broadcasts, customizing CSV recipient cohorts, managing 2-way inbox chats, tracking delivery and read receipts, and setting smart AI-powered autoreply rules.
+                    A secure enterprise SaaS suite for launching scheduled broadcasts, customizing CSV recipient cohorts, managing 2-way inbox chats, tracking delivery and read receipts, and setting predefined auto-reply rules.
                   </p>
                   
                   <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
@@ -850,9 +850,9 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <Zap className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900">AI Intelligent Auto-Replies</h3>
+                    <h3 className="text-base font-bold text-slate-900">Instant Rule-Based Auto-Replies</h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      Powered by the server-side Gemini API. Simply define a system instruction (e.g., custom company FAQ list), and the AI automatically answers outbound questions.
+                      Define keyword triggers and saved response text for pricing, catalog, support, and follow-up questions.
                     </p>
                   </div>
                 </div>
@@ -921,7 +921,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     </li>
                     <li className="flex items-center gap-2 text-slate-300">
                       <X className="w-4 h-4" />
-                      <span className="line-through">AI Gemini Autoreply Helper</span>
+                      <span className="line-through">Advanced Auto-Reply Rules</span>
                     </li>
                     <li className="flex items-center gap-2 text-slate-300">
                       <X className="w-4 h-4" />
@@ -966,7 +966,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-500" />
-                      <span>AI Gemini Autoreply Enabled</span>
+                      <span>Advanced Auto-Reply Rules</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-500" />

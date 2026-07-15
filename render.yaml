@@ -18,7 +18,7 @@ services:
       - key: VITE_API_URL
         value: https://wapi-saas.onrender.com
       - key: ALLOWED_ORIGINS
-        value: https://wapi-saas.onrender.com
+        value: https://wapi-saas.onrender.com,https://remix-whatsapp-marketing-automation.vercel.app
       - key: RAZORPAY_KEY_ID
         sync: false
       - key: RAZORPAY_KEY_SECRET

@@ -1118,7 +1118,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <Phone className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold text-slate-800">Support Hotline</p>
-                      <p className="text-slate-600">+91 120 456 7890</p>
+                      <p className="text-slate-600">+9493165230</p>
                     </div>
                   </div>
 
@@ -2034,7 +2034,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               </li>
               <li className="flex items-start gap-1.5">
                 <Phone className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                <span>+91 120 456 7890</span>
+                <span>+9493165230</span>
               </li>
             </ul>
           </div>

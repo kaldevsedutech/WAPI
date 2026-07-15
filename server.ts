@@ -24,6 +24,7 @@ const DEMO_USER_1_PHONE = process.env.TEST_USER_1_PHONE || "+910000000001";
 const DEMO_USER_2_PHONE = process.env.TEST_USER_2_PHONE || "+910000000002";
 const DEMO_USER_1_EMAIL = process.env.TEST_USER_1_EMAIL || "test-user-1@internal.local";
 const DEMO_USER_2_EMAIL = process.env.TEST_USER_2_EMAIL || "test-user-2@internal.local";
+const GOOGLE_SHEETS_CONTACT_WEBHOOK_URL = process.env.GOOGLE_SHEETS_CONTACT_WEBHOOK_URL || "";
 
 // Initialize Razorpay client with user provided credentials (or environment overrides)
 const razorpay = new Razorpay({
@@ -116,6 +117,22 @@ io.on("connection", (socket) => {
 
 const emitUserEvent = (userId: string, event: string, payload: any) => {
   io.to(userId).emit(event, payload);
+};
+
+const forwardContactInquiryToSheet = async (inquiry: any) => {
+  if (!GOOGLE_SHEETS_CONTACT_WEBHOOK_URL) return;
+  try {
+    const response = await fetch(GOOGLE_SHEETS_CONTACT_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(inquiry),
+    });
+    if (!response.ok) {
+      console.error("Google Sheets contact sync failed:", response.status, await response.text());
+    }
+  } catch (err) {
+    console.error("Google Sheets contact sync failed:", err);
+  }
 };
 
 // Set up JSON body parser with increased limit for Base64 image transfers
@@ -1157,6 +1174,7 @@ app.post("/api/contact-inquiries", (req, res) => {
 
   inquiries.unshift(inquiry);
   db.write("contact_inquiries", inquiries.slice(0, 1000));
+  void forwardContactInquiryToSheet(inquiry);
 
   res.json({
     message: "Inquiry submitted successfully.",

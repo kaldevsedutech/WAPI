@@ -15,7 +15,7 @@ interface LoginScreenProps {
 const DAILY_STARTER_PLAN = {
   id: "premium",
   name: "Daily WhatsApp Marketing",
-  price: "₹15",
+  price: "Rs 15",
   billing: "billed daily",
   cycle: "daily"
 };
@@ -625,7 +625,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               }} 
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4.5 py-2.5 rounded-xl shadow-md shadow-emerald-200 transition-all cursor-pointer"
             >
-              Start ₹15 / Day
+              Start Rs 15 / Day
             </button>
           </div>
         </div>
@@ -664,7 +664,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                       }}
                       className="w-full sm:w-auto px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
                     >
-                      <span>Start for ₹15 / Day</span>
+                      <span>Start for Rs 15 / Day</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                     <button 
@@ -879,7 +879,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <h3 className="text-xl font-bold text-slate-900 mt-1">Daily WhatsApp Marketing</h3>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-slate-900">₹15</span>
+                    <span className="text-3xl font-extrabold text-slate-900">Rs 15</span>
                     <span className="text-xs text-slate-400 font-semibold uppercase">/ Day</span>
                   </div>
                   <p className="text-xs text-slate-500">Start WhatsApp marketing with a daily Razorpay subscription.</p>
@@ -909,7 +909,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   }}
                   className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors cursor-pointer"
                 >
-                  Pay ₹15 & Start
+                  Pay Rs 15 & Start
                 </button>
               </div>
 
@@ -924,7 +924,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <h3 className="text-xl font-bold text-slate-900 mt-1">Professional Plan</h3>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-slate-900">₹300</span>
+                    <span className="text-3xl font-extrabold text-slate-900">Rs 300</span>
                     <span className="text-xs text-slate-400 font-semibold uppercase">/ Month</span>
                   </div>
                   <p className="text-xs text-slate-500">For active sellers and business campaign operations.</p>
@@ -949,7 +949,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 </div>
                 <button 
                   onClick={() => {
-                    setSelectedPlan({ id: "premium", name: "Professional Plan", price: "₹300", billing: "billed monthly", cycle: "monthly" });
+                    setSelectedPlan({ id: "premium", name: "Professional Plan", price: "Rs 300", billing: "billed monthly", cycle: "monthly" });
                     setActiveTab("register");
                   }}
                   className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md shadow-emerald-200 transition-colors cursor-pointer"
@@ -966,7 +966,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <h3 className="text-xl font-bold text-slate-900 mt-1">Enterprise Business</h3>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-slate-900">₹500</span>
+                    <span className="text-3xl font-extrabold text-slate-900">Rs 500</span>
                     <span className="text-xs text-slate-400 font-semibold uppercase">/ Month</span>
                   </div>
                   <p className="text-xs text-slate-500">Uncapped broadcasting pipeline with dedicated nodes.</p>
@@ -991,7 +991,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 </div>
                 <button 
                   onClick={() => {
-                    setSelectedPlan({ id: "business", name: "Enterprise Business", price: "₹500", billing: "billed monthly", cycle: "monthly" });
+                    setSelectedPlan({ id: "business", name: "Enterprise Business", price: "Rs 500", billing: "billed monthly", cycle: "monthly" });
                     setActiveTab("register");
                   }}
                   className="w-full py-3 bg-slate-900 hover:bg-slate-950 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
@@ -1101,7 +1101,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <Phone className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold text-slate-800">Support Hotline</p>
-                      <p className="text-slate-600">+91 98765 43210</p>
+                      <p className="text-slate-600">+91 120 456 7890</p>
                     </div>
                   </div>
 
@@ -1229,52 +1229,6 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   <span>{success}</span>
                 </div>
               )}
-
-              {/* Quick Fill Testing Credentials */}
-              <div className="mb-6 p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/80">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
-                  <span className="text-xs font-bold text-slate-800">Quick-Fill Test Credentials</span>
-                </div>
-                <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
-                  Click a button below to automatically load the registered test account:
-                </p>
-                <div className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPhone("test-user-1");
-                      setPassword("user1");
-                      setError("");
-                      setSuccess("");
-                    }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all cursor-pointer shadow-sm group"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Test User 1</p>
-                      <p className="text-[10px] text-slate-400 font-mono">Password: user1</p>
-                    </div>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-2 py-0.5 rounded uppercase">Fill</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPhone("test-user-2");
-                      setPassword("user2");
-                      setError("");
-                      setSuccess("");
-                    }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all cursor-pointer shadow-sm group"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-700">Test User 2</p>
-                      <p className="text-[10px] text-slate-400 font-mono">Password: user2</p>
-                    </div>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-2 py-0.5 rounded uppercase">Fill</span>
-                  </button>
-                </div>
-              </div>
 
               {showForgotFlow ? (
                 <div className="space-y-5">
@@ -1894,22 +1848,37 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         {activeTab === "terms" && (
           <div className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8 animate-fade-in">
             <h1 className="text-3xl font-extrabold text-slate-900">Terms and Conditions</h1>
-            <p className="text-xs text-slate-400">Last updated: July 7, 2026</p>
+            <p className="text-xs text-slate-400">Last updated: July 15, 2026</p>
             
             <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6 text-xs text-slate-600 leading-relaxed">
-              <p>Welcome to WAPISaaS. These terms and conditions outline the rules and regulations for the use of WAPISaaS's Website and SaaS platform, located at Noida, India.</p>
+              <p>Welcome to WAPIMI Automation Technologies. These Terms and Conditions govern your access to the WAPIMI WhatsApp marketing automation SaaS platform, website, dashboard, subscription plans, and related support services.</p>
               
               <h3 className="text-sm font-bold text-slate-900">1. Terms of Use</h3>
-              <p>By accessing this website, we assume you accept these terms and conditions. Do not continue to use WAPISaaS if you do not agree to take all of the terms and conditions stated on this page.</p>
+              <p>By accessing this website, creating an account, or purchasing a subscription, you agree to follow these terms. If you do not agree, you must not use WAPIMI.</p>
               
-              <h3 className="text-sm font-bold text-slate-900">2. Licensing and SaaS Access</h3>
-              <p>Unless otherwise stated, WAPISaaS and/or its licensors own the intellectual property rights for all material on WAPISaaS. All intellectual property rights are reserved. You may access this from WAPISaaS for your own personal use subjected to restrictions set in these terms and conditions.</p>
+              <h3 className="text-sm font-bold text-slate-900">2. Service Description</h3>
+              <p>WAPIMI is a digital software platform for contact group management, scheduled WhatsApp broadcasts, CSV recipient cohorts, two-way inbox monitoring, delivery/read receipt tracking, and predefined auto-reply rules.</p>
               
-              <h3 className="text-sm font-bold text-slate-900">3. User Obligations and Restrictions</h3>
-              <p>You must not use this SaaS platform to dispatch unsolicited spam messages, harassment, adult materials, or messages that violate the WhatsApp Business Policy and local telecom SLAs. WAPISaaS retains the right to suspend or block any account detected doing spamming operations immediately without prior warning.</p>
+              <h3 className="text-sm font-bold text-slate-900">3. Account Registration</h3>
+              <p>You must provide accurate account details, including your name, email address, registered WhatsApp number, and password. You are responsible for keeping your login credentials confidential and for all activity under your account.</p>
               
-              <h3 className="text-sm font-bold text-slate-900">4. Limitation of Liability</h3>
-              <p>In no event shall WAPISaaS, nor any of its officers, directors and employees, be held liable for anything arising out of or in any way connected with your use of this website or software dashboard.</p>
+              <h3 className="text-sm font-bold text-slate-900">4. Subscription Plans and Payments</h3>
+              <p>Public pricing is displayed on the Pricing page. Current plans include Daily Plan at Rs 15/day, Professional Plan at Rs 300/month, and Enterprise Plan at Rs 500/month. Payments are processed securely through Razorpay. Access is activated after successful payment confirmation.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">5. User Responsibilities and Acceptable Use</h3>
+              <p>You must use WAPIMI only for lawful business messaging to recipients who have consented to receive communication from you. Spam, phishing, illegal promotions, harassment, adult content, fraudulent offers, and violation of WhatsApp/Meta policies are strictly prohibited.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">6. Suspension and Termination</h3>
+              <p>We may suspend or terminate accounts that misuse the platform, violate applicable law, breach these terms, attempt unauthorized access, or create compliance risks for WAPIMI, Razorpay, WhatsApp, Meta, or customers.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">7. Intellectual Property</h3>
+              <p>All software, branding, interfaces, workflows, and documentation belonging to WAPIMI remain the intellectual property of WAPIMI Automation Technologies. You may not copy, resell, reverse engineer, or misuse the platform.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">8. Limitation of Liability</h3>
+              <p>WAPIMI is provided as a digital software service. We are not responsible for recipient-side network issues, WhatsApp/Meta platform restrictions, customer misuse, third-party outages, or indirect business losses.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">9. Governing Law and Contact</h3>
+              <p>These terms are governed by the laws of India. For questions, contact WAPIMI Automation Technologies, Sector 62, Noida, Uttar Pradesh, India, at mychatgptcourse@gmail.com.</p>
             </div>
           </div>
         )}
@@ -1918,19 +1887,34 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         {activeTab === "privacy" && (
           <div className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8 animate-fade-in">
             <h1 className="text-3xl font-extrabold text-slate-900">Privacy Policy</h1>
-            <p className="text-xs text-slate-400">Last updated: July 7, 2026</p>
+            <p className="text-xs text-slate-400">Last updated: July 15, 2026</p>
             
             <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6 text-xs text-slate-600 leading-relaxed">
-              <p>At WAPISaaS, accessible from our official dashboard, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by WAPISaaS and how we use it.</p>
+              <p>At WAPIMI Automation Technologies, privacy and data safety are important. This Privacy Policy explains what information we collect, how we use it, and how users can contact us about their data.</p>
               
-              <h3 className="text-sm font-bold text-slate-900">1. Data Storage & Encryption</h3>
-              <p>Your database profiles, contacts lists, and message text logs are securely encrypted inside local cloud-based container volumes. We do not store, inspect, or process personal message details except to fulfill technical broadcast jobs requested explicitly by the user.</p>
+              <h3 className="text-sm font-bold text-slate-900">1. Information We Collect</h3>
+              <p>We may collect your name, email address, registered phone number, account password, business contact lists uploaded by you, campaign records, support messages, subscription status, and payment confirmation details. Card, UPI, netbanking, and wallet credentials are handled by Razorpay and are not stored by WAPIMI.</p>
               
-              <h3 className="text-sm font-bold text-slate-900">2. Cookie Policy</h3>
-              <p>WAPISaaS uses standard browser cookies solely to maintain your signed-in JWT token session parameters. No cookies are utilized for external third-party behavioral tracking or advertisements.</p>
+              <h3 className="text-sm font-bold text-slate-900">2. How We Use Information</h3>
+              <p>We use information to create accounts, authenticate users, activate subscriptions, provide dashboard access, process campaigns requested by users, maintain delivery/read records, respond to support requests, improve reliability, and comply with legal or payment obligations.</p>
               
-              <h3 className="text-sm font-bold text-slate-900">3. Consent</h3>
-              <p>By using our website, you hereby consent to our Privacy Policy and agree to its terms and conditions.</p>
+              <h3 className="text-sm font-bold text-slate-900">3. Cookies and Session Storage</h3>
+              <p>We use essential browser storage and authentication tokens to keep users signed in and operate the dashboard. We do not use these tools to sell user data or run unrelated advertising trackers.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">4. Payment Security</h3>
+              <p>Payments are processed through Razorpay. Razorpay may collect payment-related information under its own security and compliance standards. WAPIMI stores only payment references, order IDs, subscription records, and status needed for account activation and support.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">5. Third-Party Services</h3>
+              <p>WAPIMI may interact with Razorpay for payment processing and Meta/WhatsApp services for WhatsApp-related workflows. Your use of WhatsApp features must also comply with WhatsApp and Meta policies.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">6. Data Protection</h3>
+              <p>We use access controls and reasonable security measures to protect account data and uploaded contact lists. Users are responsible for ensuring they have lawful permission to upload and message recipients.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">7. User Rights</h3>
+              <p>You may contact us to request correction, export, or deletion of your account data where legally permitted. Some records may be retained where required for payment, security, legal, or fraud-prevention purposes.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">8. Contact Information</h3>
+              <p>For privacy requests, contact WAPIMI Automation Technologies at mychatgptcourse@gmail.com. Business address: Sector 62, Noida, Uttar Pradesh, India.</p>
             </div>
           </div>
         )}
@@ -1939,16 +1923,46 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         {activeTab === "refund" && (
           <div className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8 animate-fade-in">
             <h1 className="text-3xl font-extrabold text-slate-900">Refund and Cancellation Policy</h1>
-            <p className="text-xs text-slate-400">Last updated: July 7, 2026</p>
+            <p className="text-xs text-slate-400">Last updated: July 15, 2026</p>
             
             <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6 text-xs text-slate-600 leading-relaxed">
-              <p>Our commitment to user happiness is central. Please read our standard refund terms carefully before completing premium checkouts.</p>
+              <p>At WAPIMI Automation Technologies, customer satisfaction is important. Since WAPIMI provides digital software services, subscriptions are activated after successful payment and access is delivered electronically.</p>
               
               <h3 className="text-sm font-bold text-slate-900">1. Cancellation Policy</h3>
-              <p>Users can completely cancel their recurring Professional or Enterprise subscription plans at any time through the Billing section of the private dashboard. Upon cancellation, your limits remain valid until the current cycle expires, and no future bills will occur.</p>
+              <p>Users may cancel their subscription at any time from their dashboard or by contacting support. Cancellation prevents future renewals but does not automatically generate a refund. Access remains available until the end of the paid billing cycle unless the account is suspended for misuse.</p>
               
-              <h3 className="text-sm font-bold text-slate-900">2. Refund Window SLA</h3>
-              <p>We provide a **7-day money-back guarantee** on all premium tier upgrades. If you are dissatisfied with our WhatsApp broadcast throughput speed or feature list, please open an email ticket to <a href="mailto:mychatgptcourse@gmail.com" className="text-emerald-600 font-bold hover:underline">mychatgptcourse@gmail.com</a> within 7 calendar days of your upgrade. Refunds are automatically verified and credited back to your original payment node within 5-7 bank working days.</p>
+              <h3 className="text-sm font-bold text-slate-900">2. Refund Eligibility</h3>
+              <p>Payments already made are generally non-refundable because access to the digital service is provided instantly. Refunds may be considered only for duplicate payments, technical issues that permanently prevent service activation, or incorrect charges caused by a payment processing error.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">3. Refund Processing Time</h3>
+              <p>Approved refunds will be processed to the original payment method within 7 to 10 business days, subject to Razorpay and bank processing timelines.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">4. Refund Contact</h3>
+              <p>For refund or cancellation requests, email <a href="mailto:mychatgptcourse@gmail.com" className="text-emerald-600 font-bold hover:underline">mychatgptcourse@gmail.com</a> with your registered email, payment reference, and reason for the request.</p>
+            </div>
+          </div>
+        )}
+
+        {/* --- SHIPPING & DELIVERY POLICY TAB --- */}
+        {activeTab === "shipping" && (
+          <div className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8 animate-fade-in">
+            <h1 className="text-3xl font-extrabold text-slate-900">Shipping and Delivery Policy</h1>
+            <p className="text-xs text-slate-400">Last updated: July 15, 2026</p>
+
+            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6 text-xs text-slate-600 leading-relaxed">
+              <p>WAPIMI is a cloud-based digital software platform. No physical goods are sold, packed, shipped, or delivered by courier.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">1. Digital Delivery</h3>
+              <p>After successful payment, users receive access to their subscribed plan through their registered WAPIMI account. The dashboard, plan limits, and software features are provided online.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">2. Activation Timeline</h3>
+              <p>In most cases, plan activation is immediate after successful Razorpay payment verification. If activation is delayed due to technical issues, most cases are resolved within one business day.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">3. No Physical Shipping Charges</h3>
+              <p>Because WAPIMI is a digital SaaS product, there are no shipping charges, courier tracking numbers, or physical delivery timelines.</p>
+
+              <h3 className="text-sm font-bold text-slate-900">4. Support</h3>
+              <p>If your account is not activated after successful payment, contact support at <a href="mailto:mychatgptcourse@gmail.com" className="text-emerald-600 font-bold hover:underline">mychatgptcourse@gmail.com</a>. Include your registered email and Razorpay payment reference.</p>
             </div>
           </div>
         )}
@@ -1986,6 +2000,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <li><button onClick={() => setActiveTab("terms")} className="hover:text-white transition-colors cursor-pointer">Terms and Conditions</button></li>
               <li><button onClick={() => setActiveTab("privacy")} className="hover:text-white transition-colors cursor-pointer">Privacy Policy</button></li>
               <li><button onClick={() => setActiveTab("refund")} className="hover:text-white transition-colors cursor-pointer">Refund and Cancellation</button></li>
+              <li><button onClick={() => setActiveTab("shipping")} className="hover:text-white transition-colors cursor-pointer">Shipping and Delivery</button></li>
             </ul>
           </div>
 
@@ -1999,6 +2014,10 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <li className="flex items-start gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                 <a href="mailto:mychatgptcourse@gmail.com" className="hover:text-white transition-colors">mychatgptcourse@gmail.com</a>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                <span>+91 120 456 7890</span>
               </li>
             </ul>
           </div>

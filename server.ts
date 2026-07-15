@@ -216,7 +216,7 @@ const seedDB = () => {
       },
       {
         id: "u_demo",
-        name: "Test User 1",
+        name: "Demo Account A",
         email: DEMO_USER_1_EMAIL,
         password: "user1",
         role: "user",
@@ -232,7 +232,7 @@ const seedDB = () => {
       },
       {
         id: "u_user2",
-        name: "Test User 2",
+        name: "Demo Account B",
         email: DEMO_USER_2_EMAIL,
         password: "user2",
         role: "user",
@@ -3157,7 +3157,7 @@ app.get("/api/faq-data", (req, res) => {
       {
         category: "billing",
         question: "What is your refund policy?",
-        answer: "We offer a fully transparent refund policy. If you cancel your subscription within 48 hours of original purchase or renewal, you are eligible for a 100% full refund, provided your total WhatsApp broadcasts have not exceeded 100 messages. Beyond this threshold or after 48 hours, subscription charges are non-refundable, but you will retain full access to your plan benefits until the end of the current billing cycle."
+        answer: "WAPIMI is a digital SaaS product and subscriptions are activated after successful payment. Payments are generally non-refundable once access is provided. Refunds may be considered for duplicate payment, permanent activation failure caused by a technical issue, or incorrect payment processing charges. Approved refunds are processed to the original payment method within 7 to 10 business days."
       },
       {
         category: "whatsapp",
@@ -3192,7 +3192,7 @@ app.get("/api/faq-data", (req, res) => {
         sections: [
           {
             title: "1. Agreement and Service Description",
-            content: "By accessing WAPIMI ('the Service'), registering an account, or purchasing a subscription plan, you agree to be bound legally by these Terms of Service. WAPIMI provides automated scheduling, contacts management, dashboard analytics, and messaging protocols using a web-based WhatsApp connection interface."
+            content: "By accessing WAPIMI ('the Service'), registering an account, or purchasing a subscription plan, you agree to be bound by these Terms of Service. WAPIMI provides contact group management, scheduled WhatsApp broadcasts, CSV recipient cohorts, two-way inbox monitoring, delivery/read receipt tracking, and predefined auto-reply rules."
           },
           {
             title: "2. Acceptable Use and Absolute Anti-Spam Policy",
@@ -3204,7 +3204,7 @@ app.get("/api/faq-data", (req, res) => {
           },
           {
             title: "4. Billing, Auto-Renewals, and Cancellations",
-            content: "All purchases are handled via secure payment channels. Subscriptions auto-renew periodically (Daily, Weekly, or Monthly) unless explicitly cancelled by the user inside the Billing Manager interface prior to the next billing cycle date. Cancellation stops future renewals instantly, keeping your active features valid until current cycle expiry."
+            content: "Public pricing includes Daily Plan at Rs 15/day, Professional Plan at Rs 300/month, and Enterprise Plan at Rs 500/month. Payments are handled through Razorpay. Users may cancel future renewals from the dashboard or by contacting support. Cancellation does not automatically generate a refund for an already activated digital subscription."
           },
           {
             title: "5. Disclaimer of Warranties and Limitation of Liability",
@@ -3213,20 +3213,20 @@ app.get("/api/faq-data", (req, res) => {
         ]
       },
       privacy: {
-        lastUpdated: "July 9, 2026",
+        lastUpdated: "July 15, 2026",
         guarantee: "We do not sell, rent, or lease your contact lists, recipient numbers, uploaded files, or campaign message history to anyone. All client data stays isolated on high-security encrypted tables.",
         sections: [
           {
             title: "1. What Information We Store",
-            content: "To provide broadcast functions, we store: (a) Your basic profile records (name, email, password hashes); (b) Contact numbers and dynamic variables uploaded by you via CSV; (c) Chronological transmission logs (timestamp, recipient phone, delivery status); and (d) Session token indices necessary to link your WhatsApp connection router."
+            content: "To provide the Service, we may store your name, email address, registered phone number, authentication details, uploaded contact lists, campaign records, support messages, payment references, subscription status, and delivery/read receipt logs. WAPIMI does not store card, UPI, netbanking, or wallet credentials; those are handled by Razorpay."
           },
           {
             title: "2. Handling of Uploaded CSV Databases",
             content: "When you upload a marketing recipient list, the phone numbers are isolated securely under your unique user ID. These databases are accessed solely when launching active campaigns or reviewing stats. You can instantly delete any contact group permanently at any time, which purges all associated indices from our storage disks immediately."
           },
           {
-            title: "3. Cookies and Diagnostics",
-            content: "We utilize secure, essential local variables and storage indices to persist your current authentication state. We do not run intrusive tracking trackers, cross-site telemetry trackers, or marketing trackers in your browser."
+            title: "3. Cookies, Payments, and Third-Party Services",
+            content: "We use essential browser storage and authentication tokens to operate user sessions. Payments are processed through Razorpay. WhatsApp-related workflows may interact with Meta/WhatsApp services, and users are responsible for following Meta and WhatsApp policies."
           },
           {
             title: "4. Your Privacy Control Rights",
@@ -3235,23 +3235,40 @@ app.get("/api/faq-data", (req, res) => {
         ]
       },
       refunds: {
-        lastUpdated: "July 9, 2026",
+        lastUpdated: "July 15, 2026",
         sections: [
           {
             title: "1. How to Cancel Your Subscription",
-            content: "You can cancel your active recurring subscription plan at any time. To cancel, go to the Billing & Plans tab, find your current plan card, and click the 'Cancel Subscription' button. WAPIMI does not levy any exit penalties or cancellation processing fees. Following cancellation, your plan remains active until the end of the current billing cycle."
+            content: "Users may cancel their active subscription at any time from the Billing & Plans dashboard or by contacting support. Cancellation prevents future renewals but does not automatically generate a refund. Access remains active until the end of the paid billing cycle unless the account is suspended for misuse."
           },
           {
-            title: "2. 48-Hour Full Refund Window",
-            content: "We provide a standard 48-hour money-back guarantee for all subscription tiers (Daily, Weekly, and Monthly cycles). If you cancel within 48 hours of original payment or billing renewal, you can email support for a full refund, subject to the following fair-use threshold: (a) Total WhatsApp broadcasts processed must be less than 100 messages; (b) Profile must not have any past recorded anti-spam or terms violations."
+            title: "2. Refund Eligibility",
+            content: "Because WAPIMI provides digital software access after successful payment, completed payments are generally non-refundable. Refunds may be considered only for duplicate payment, technical issues that permanently prevent service activation, or incorrect charges caused by payment processing error."
           },
           {
-            title: "3. Upgrades and Downgrades",
-            content: "If you decide to upgrade your plan mid-cycle, our system will calculate a pro-rata credit based on the unused portion of your existing subscription, applying it directly as a discount toward your upgraded plan invoice. Downgrading takes effect at the end of the current billing cycle to avoid loss of active features."
+            title: "3. Refund Request Process",
+            content: "To request a refund review, email mychatgptcourse@gmail.com with your registered email address, Razorpay payment reference, and reason for the request."
           },
           {
             title: "4. Processing and Bank Delays",
-            content: "Approved refunds are returned to the source card or original payment account used for checkout. While we approve and trigger refunds immediately in our system, bank clearing cycles typically take 5 to 10 business days to reflect in your financial statement."
+            content: "Approved refunds are processed to the original payment method within 7 to 10 business days, subject to Razorpay and bank timelines."
+          }
+        ]
+      },
+      shipping: {
+        lastUpdated: "July 15, 2026",
+        sections: [
+          {
+            title: "1. Digital Software Service",
+            content: "WAPIMI is a cloud-based digital SaaS platform. No physical products are shipped, and there are no courier charges or physical delivery timelines."
+          },
+          {
+            title: "2. Delivery of Access",
+            content: "After successful Razorpay payment verification, users receive access to their subscribed plan through their registered WAPIMI account. Activation is usually immediate."
+          },
+          {
+            title: "3. Activation Delay Support",
+            content: "If activation is delayed due to technical issues, users should contact mychatgptcourse@gmail.com with their registered email and payment reference. Most activation issues are resolved within one business day."
           }
         ]
       }

@@ -204,11 +204,12 @@ export default function FaqAndPolicies({ user }: FaqAndPoliciesProps) {
     const termsSections = policies.terms?.sections || [];
     const privacySections = policies.privacy?.sections || [];
     const refundSections = policies.refunds?.sections || [];
+    const shippingSections = policies.shipping?.sections || [];
 
     if (activeCategory === "billing") {
       return {
         title: "Billing & Refund Policies",
-        description: "Review detailed cancellation terms, subscription renewals, and our 48-hour refund window.",
+        description: "Review subscription billing, cancellation, refund eligibility, and digital delivery terms.",
         sections: [
           // Terms section 4: Billing
           ...termsSections.filter((s: any) => s.title.includes("Billing") || s.title.includes("4.")).map((s: any) => ({
@@ -219,6 +220,10 @@ export default function FaqAndPolicies({ user }: FaqAndPoliciesProps) {
           ...refundSections.map((s: any) => ({
             ...s,
             source: "Refund Policy"
+          })),
+          ...shippingSections.map((s: any) => ({
+            ...s,
+            source: "Shipping & Delivery Policy"
           }))
         ]
       };
@@ -484,14 +489,14 @@ export default function FaqAndPolicies({ user }: FaqAndPoliciesProps) {
                           </div>
                         )}
 
-                        {sec.title.includes("48-Hour Full Refund Window") && (
+                        {sec.title.includes("Refund Eligibility") && (
                           <div className="bg-slate-50 p-4 border border-slate-200 rounded-xl font-mono text-[9.5px] text-slate-700 space-y-1">
                             <div className="flex items-center gap-1.5 text-slate-800 font-bold mb-1 text-xs">
                               <Info className="w-4 h-4 text-amber-500 shrink-0" />
-                              Refund Fair-Use Limit Condition
+                              Refund Review Conditions
                             </div>
-                            <p>• Total WhatsApp broadcasts processed must be less than <strong>100 messages</strong>.</p>
-                            <p>• Profile must not have any past recorded anti-spam or terms violations.</p>
+                            <p>Duplicate payment, permanent activation failure, or incorrect processing charge.</p>
+                            <p>Approved refunds are processed to the original payment method within 7 to 10 business days.</p>
                           </div>
                         )}
                       </section>
@@ -505,7 +510,7 @@ export default function FaqAndPolicies({ user }: FaqAndPoliciesProps) {
 
                 {/* Footer Policy Badge */}
                 <div className="border-t border-slate-100 pt-5 text-center flex items-center justify-between gap-4 flex-wrap text-[10px] text-slate-400 font-medium">
-                  <p>Legal Version: 2.5 • Effective July 9, 2026</p>
+                  <p>Legal Version: 2.6 - Effective July 15, 2026</p>
                   <p className="flex items-center gap-1.5">
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
                     WAPIMI Regulatory Compliance certified

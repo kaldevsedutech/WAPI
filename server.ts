@@ -20,6 +20,10 @@ dotenv.config();
 
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
+const DEMO_USER_1_PHONE = process.env.TEST_USER_1_PHONE || "+910000000001";
+const DEMO_USER_2_PHONE = process.env.TEST_USER_2_PHONE || "+910000000002";
+const DEMO_USER_1_EMAIL = process.env.TEST_USER_1_EMAIL || "test-user-1@internal.local";
+const DEMO_USER_2_EMAIL = process.env.TEST_USER_2_EMAIL || "test-user-2@internal.local";
 
 // Initialize Razorpay client with user provided credentials (or environment overrides)
 const razorpay = new Razorpay({
@@ -213,10 +217,10 @@ const seedDB = () => {
       {
         id: "u_demo",
         name: "Test User 1",
-        email: "user1@gmail.com",
+        email: DEMO_USER_1_EMAIL,
         password: "user1",
         role: "user",
-        allowedWhatsapp: "+919876543210",
+        allowedWhatsapp: DEMO_USER_1_PHONE,
         subscription: "premium",
         billingCycle: "annually",
         expiryDate: "2026-10-01",
@@ -229,10 +233,10 @@ const seedDB = () => {
       {
         id: "u_user2",
         name: "Test User 2",
-        email: "user2@gmail.com",
+        email: DEMO_USER_2_EMAIL,
         password: "user2",
         role: "user",
-        allowedWhatsapp: "+919988776655",
+        allowedWhatsapp: DEMO_USER_2_PHONE,
         subscription: "premium",
         billingCycle: "weekly",
         expiryDate: "2026-10-01",
@@ -255,8 +259,8 @@ const seedDB = () => {
         count: 5,
         createdAt: new Date().toISOString(),
         contacts: [
-          { id: "c1", name: "Ravi Kumar", phone: "+919876543210", variables: { customer: "Ravi Kumar", city: "Hyderabad", offer: "50%" } },
-          { id: "c2", name: "Ananya Sharma", phone: "+919988776655", variables: { customer: "Ananya", city: "Bangalore", offer: "40%" } },
+          { id: "c1", name: "Ravi Kumar", phone: DEMO_USER_1_PHONE, variables: { customer: "Ravi Kumar", city: "Hyderabad", offer: "50%" } },
+          { id: "c2", name: "Ananya Sharma", phone: DEMO_USER_2_PHONE, variables: { customer: "Ananya", city: "Bangalore", offer: "40%" } },
           { id: "c3", name: "John Doe", phone: "+15550192834", variables: { customer: "John", city: "New York", offer: "30%" } },
           { id: "c4", name: "Priya Patel", phone: "+918887776665", variables: { customer: "Priya", city: "Mumbai", offer: "50%" } },
           { id: "c5", name: "David Miller", phone: "+447700900077", variables: { customer: "David", city: "London", offer: "20%" } },
@@ -294,7 +298,7 @@ const seedDB = () => {
         userId: "u_demo",
         campaignId: "camp_1",
         name: "Ravi Kumar",
-        phone: "+919876543210",
+        phone: DEMO_USER_1_PHONE,
         message: "Hello Ravi Kumar,\n\nSpecial Diwali discount of 50% is live in Hyderabad! Connect with us now to purchase.",
         status: "read",
         direction: "outbound",
@@ -304,7 +308,7 @@ const seedDB = () => {
         id: "msg_in_1",
         userId: "u_demo",
         name: "Ravi Kumar",
-        phone: "+919876543210",
+        phone: DEMO_USER_1_PHONE,
         message: "Hi, is this offer valid on electronics?",
         status: "read",
         direction: "inbound",
@@ -314,7 +318,7 @@ const seedDB = () => {
         id: "msg_reply_1",
         userId: "u_demo",
         name: "Ravi Kumar",
-        phone: "+919876543210",
+        phone: DEMO_USER_1_PHONE,
         message: "Yes Ravi! It is valid on all categories including electronics.",
         status: "read",
         direction: "outbound",
@@ -329,7 +333,7 @@ const seedDB = () => {
     db.write("sessions", [
       {
         userId: "u_demo",
-        whatsappNumber: "+919876543210",
+        whatsappNumber: DEMO_USER_1_PHONE,
         sessionStatus: "connected",
         connectedAt: new Date().toISOString(),
       },
@@ -3448,7 +3452,9 @@ setInterval(() => {
 // ---------------- VITE DEV SERVER OR STATIC SERVING ----------------
 async function startServer() {
   // Vite integration
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV === "test") {
+    // API-only mode keeps integration tests fast and avoids starting Vite.
+  } else if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

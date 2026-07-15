@@ -2,7 +2,17 @@ import { describe, it, expect } from "vitest";
 import fs from "fs";
 import path from "path";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = process.env.TEST_BASE_URL || "http://127.0.0.1:3107";
+
+const readJsonFile = (filePath: string) =>
+  JSON.parse(fs.readFileSync(filePath, "utf-8").replace(/^\uFEFF/, ""));
+
+const readInternalDemoPhone = () => {
+  const users = readJsonFile(path.resolve(__dirname, "../data/users.json"));
+  const demoUser = users.find((u: any) => u.id === "u_demo");
+  if (!demoUser?.allowedWhatsapp) throw new Error("Internal demo phone is missing");
+  return demoUser.allowedWhatsapp;
+};
 
 describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
   let authToken = "";
@@ -13,7 +23,7 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: "+919876543210", // u_demo's registered allowedWhatsapp
+        email: "test-user-1",
         password: "user1"
       })
     });
@@ -70,7 +80,7 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
         "Authorization": `Bearer ${authToken}`
       },
       body: JSON.stringify({
-        scannedNumber: "+919999999999" // different from allowed +919876543210
+        scannedNumber: "+910000099999"
       })
     });
 
@@ -109,7 +119,7 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
         "Authorization": `Bearer ${authToken}`
       },
       body: JSON.stringify({
-        scannedNumber: "+919876543210"
+        scannedNumber: readInternalDemoPhone()
       })
     });
 
@@ -140,7 +150,7 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
         "Authorization": `Bearer ${authToken}`
       },
       body: JSON.stringify({
-        phone: "+919876543210",
+        phone: readInternalDemoPhone(),
         message: "Can I get a discountCode please?"
       })
     });
@@ -158,8 +168,7 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
     expect(chatsRes.status).toBe(200);
     const chatsData = await chatsRes.json();
     
-    // Find the chat with +919876543210
-    const chat = chatsData.chats.find((c: any) => c.phone === "+919876543210");
+    const chat = chatsData.chats.find((c: any) => c.phone === readInternalDemoPhone());
     expect(chat).toBeDefined();
 
     // Look for our discountCode reply in the chat messages
@@ -180,7 +189,7 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
     // Reset u_demo promo code in the db file to prevent test pollution
     const dbPath = path.resolve(__dirname, "../data/users.json");
     if (fs.existsSync(dbPath)) {
-      const users = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
+      const users = readJsonFile(dbPath);
       const uDemo = users.find((u: any) => u.id === "u_demo");
       if (uDemo) {
         delete uDemo.appliedPromoCode;
@@ -241,8 +250,8 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
   it("should dispatch a campaign, pause it, and resume it successfully", async () => {
     // 1. Start a campaign
     const contacts = [
-      { name: "Client A", phone: "+919876543210" },
-      { name: "Client B", phone: "+919876543211" }
+      { name: "Client A", phone: readInternalDemoPhone() },
+      { name: "Client B", phone: "+910000000011" }
     ];
 
     const dispatchRes = await fetch(`${BASE_URL}/api/campaigns`, {
@@ -298,9 +307,9 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
 
   it("should successfully dispatch direct messages manually via the table campaigns route", async () => {
     const rows = [
-      { name: "John", phone: "+919876543210", message: "Hi John, this is direct msg 1", selected: true, repeat: 1 },
-      { name: "Sam", phone: "+919876543212", message: "Hi Sam, this is direct msg 2", selected: true, repeat: 1 },
-      { name: "Draft", phone: "+919876543213", message: "Skipped", selected: false, repeat: 1 }
+      { name: "John", phone: readInternalDemoPhone(), message: "Hi John, this is direct msg 1", selected: true, repeat: 1 },
+      { name: "Sam", phone: "+910000000012", message: "Hi Sam, this is direct msg 2", selected: true, repeat: 1 },
+      { name: "Draft", phone: "+910000000013", message: "Skipped", selected: false, repeat: 1 }
     ];
 
     const res = await fetch(`${BASE_URL}/api/campaigns/direct`, {

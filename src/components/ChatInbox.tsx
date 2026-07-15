@@ -777,7 +777,7 @@ export default function ChatInbox({ session, initialChatPhone, user }: ChatInbox
                 type="text"
                 value={simPhone}
                 onChange={(e) => setSimPhone(e.target.value)}
-                placeholder="e.g. 919876543210"
+                placeholder="e.g. 910000000001"
                 className="block w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-slate-50/50 font-mono"
               />
             </div>
@@ -809,10 +809,10 @@ export default function ChatInbox({ session, initialChatPhone, user }: ChatInbox
             <div className="space-y-2">
               
               <button
-                onClick={() => handlePreFillInbound("Ravi Kumar", "919876543210", "Price of your campaign tool?")}
+                onClick={() => handlePreFillInbound("Ravi Kumar", "910000000001", "Price of your campaign tool?")}
                 className="w-full text-left p-2 hover:bg-slate-50 border border-slate-100 rounded-xl text-[10px] block transition-colors cursor-pointer"
               >
-                <span className="font-bold text-slate-800 block">Ravi Kumar (919876543210)</span>
+                <span className="font-bold text-slate-800 block">Ravi Kumar (910000000001)</span>
                 <span className="text-slate-500 italic">"Price of your campaign tool?"</span>
               </button>
 

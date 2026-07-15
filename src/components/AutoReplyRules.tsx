@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Sparkles,
   Plus,
@@ -435,7 +435,7 @@ export default function AutoReplyRules() {
                   className="w-full h-24 p-3 border border-emerald-200/60 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
                 />
                 <p className="text-[10px] text-emerald-600/80">
-                  This app sends only saved rule responses. No external AI API is required.
+                  This app sends only saved rule responses. No external response API is required.
                 </p>
               </div>
             ) : (
@@ -608,7 +608,7 @@ export default function AutoReplyRules() {
                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
-                    <span>AI Responder typing...</span>
+                    <span>Rule responder typing...</span>
                   </div>
                 )}
               </div>

@@ -349,7 +349,7 @@ const seedDB = () => {
         userId: "u_demo",
         keyword: "price",
         matchType: "contains",
-        replyText: "Our standard subscription is $19/week or $590/year. Let me know if you want to purchase! ✨",
+        replyText: "Our standard subscription starts at Rs 15/day. Let me know if you want to purchase.",
         aiEnabled: false,
         isActive: true,
         createdAt: new Date().toISOString()
@@ -359,9 +359,9 @@ const seedDB = () => {
         userId: "u_demo",
         keyword: "help",
         matchType: "equals",
-        replyText: "Sure, let me call the AI agent to help you!",
+        replyText: "Sure, our saved support response can help you.",
         aiEnabled: true,
-        aiPrompt: "You are an automated support expert. Be extremely brief (max 2 sentences) and professional.",
+        aiPrompt: "Use this saved support response style: be brief, professional, and helpful.",
         isActive: true,
         createdAt: new Date().toISOString()
       }
@@ -2612,7 +2612,7 @@ app.get("/api/autoreply/rules", authenticateUser, (req, res) => {
 app.post("/api/autoreply/rules", authenticateUser, (req, res) => {
   const { keyword, matchType, replyText, aiEnabled, aiPrompt } = req.body;
   if (!keyword || (!replyText && !aiEnabled)) {
-    return res.status(400).json({ error: "Keyword and reply text/AI settings are required." });
+    return res.status(400).json({ error: "Keyword and reply text or saved response settings are required." });
   }
 
   const rules = db.read("auto_reply_rules");

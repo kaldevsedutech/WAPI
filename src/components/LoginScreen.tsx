@@ -785,7 +785,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     </div>
                     <h3 className="text-lg font-bold text-slate-900">2-Way Shared Inbox</h3>
                     <p className="text-xs text-slate-500 leading-relaxed">
-                      Don't just broadcast—have meaningful follow-ups. Answer customer incoming messages in real-time, toggle rules, or view AI suggestions.
+                      Don't just broadcast. Have meaningful follow-ups, answer incoming customer messages in real time, and toggle saved reply rules.
                     </p>
                   </div>
                 </div>

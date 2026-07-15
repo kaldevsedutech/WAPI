@@ -65,7 +65,7 @@ export default function DashboardOverview({ user, setTab, onQuickAddContact, onO
   // FAB Speed Dial State
   const [fabOpen, setFabOpen] = useState(false);
 
-  // Smart AI Insights States
+  // Rule-based marketing insights state
   const [insights, setInsights] = useState<any[]>([]);
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [insightsError, setInsightsError] = useState("");
@@ -646,7 +646,7 @@ export default function DashboardOverview({ user, setTab, onQuickAddContact, onO
         })}
       </div>
 
-      {/* Smart AI Insights Panel */}
+      {/* Rule-Based Insights Panel */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-8 relative overflow-hidden">
         {/* Background decoration gradient */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/30 rounded-full blur-3xl -z-10 pointer-events-none" />

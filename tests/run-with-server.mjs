@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 
-const port = process.env.TEST_PORT || "3107";
+const port = process.env.TEST_PORT || String(3107 + Math.floor(Math.random() * 1000));
 const baseUrl = `http://127.0.0.1:${port}`;
 
 const cleanEnv = Object.fromEntries(

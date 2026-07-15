@@ -1128,6 +1128,42 @@ app.post("/api/auth/reset-password", (req, res) => {
   res.json({ message: "Password reset successful! You can now log in with your new password." });
 });
 
+app.post("/api/contact-inquiries", (req, res) => {
+  const { name, email, subject, message } = req.body;
+  const safeName = String(name || "").trim();
+  const safeEmail = String(email || "").trim().toLowerCase();
+  const safeSubject = String(subject || "").trim();
+  const safeMessage = String(message || "").trim();
+
+  if (!safeName || !safeEmail || !safeSubject || !safeMessage) {
+    return res.status(400).json({ error: "Name, email, subject, and message are required." });
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(safeEmail)) {
+    return res.status(400).json({ error: "Please enter a valid email address." });
+  }
+
+  const inquiries = db.read("contact_inquiries");
+  const inquiry = {
+    id: "inq_" + Math.random().toString(36).substring(2, 10),
+    name: safeName,
+    email: safeEmail,
+    subject: safeSubject,
+    message: safeMessage,
+    status: "new",
+    source: "public_contact_form",
+    createdAt: new Date().toISOString(),
+  };
+
+  inquiries.unshift(inquiry);
+  db.write("contact_inquiries", inquiries.slice(0, 1000));
+
+  res.json({
+    message: "Inquiry submitted successfully.",
+    inquiryId: inquiry.id,
+  });
+});
+
 app.get("/api/auth/me", authenticateUser, (req, res) => {
   res.json({ user: req.user });
 });
@@ -3247,7 +3283,7 @@ app.get("/api/faq-data", (req, res) => {
           },
           {
             title: "3. Refund Request Process",
-            content: "To request a refund review, email mychatgptcourse@gmail.com with your registered email address, Razorpay payment reference, and reason for the request."
+            content: "To request a refund review, email kaldevsedutech@gmail.com with your registered email address, Razorpay payment reference, and reason for the request."
           },
           {
             title: "4. Processing and Bank Delays",
@@ -3268,7 +3304,7 @@ app.get("/api/faq-data", (req, res) => {
           },
           {
             title: "3. Activation Delay Support",
-            content: "If activation is delayed due to technical issues, users should contact mychatgptcourse@gmail.com with their registered email and payment reference. Most activation issues are resolved within one business day."
+            content: "If activation is delayed due to technical issues, users should contact kaldevsedutech@gmail.com with their registered email and payment reference. Most activation issues are resolved within one business day."
           }
         ]
       }
@@ -3509,3 +3545,4 @@ async function startServer() {
 }
 
 startServer();
+

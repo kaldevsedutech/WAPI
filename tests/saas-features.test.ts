@@ -17,6 +17,27 @@ const readInternalDemoPhone = () => {
 describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
   let authToken = "";
 
+  it("should store public contact form inquiries", async () => {
+    const res = await fetch(`${BASE_URL}/api/contact-inquiries`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Razorpay Reviewer",
+        email: "reviewer@example.com",
+        subject: "Website verification",
+        message: "Please confirm contact form storage.",
+      }),
+    });
+
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.inquiryId).toMatch(/^inq_/);
+
+    const dbPath = path.resolve(__dirname, "../data/contact_inquiries.json");
+    const inquiries = readJsonFile(dbPath);
+    expect(inquiries.some((inq: any) => inq.id === data.inquiryId && inq.email === "reviewer@example.com")).toBe(true);
+  });
+
   it("should successfully log in the demo user using registered credentials", async () => {
     // The login route takes 'email' as the field name holding the phone input
     const res = await fetch(`${BASE_URL}/api/auth/login`, {

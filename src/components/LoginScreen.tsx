@@ -536,14 +536,28 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   };
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactName || !contactEmail || !contactSubject || !contactMsg) {
       alert("Please fill in all fields.");
       return;
     }
     setContactLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/contact-inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: contactName,
+          email: contactEmail,
+          subject: contactSubject,
+          message: contactMsg,
+        }),
+      });
+      const data = await readApiResponse(res);
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to submit inquiry.");
+      }
       setContactLoading(false);
       setContactSuccess(true);
       setContactName("");
@@ -551,7 +565,10 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       setContactSubject("");
       setContactMsg("");
       setTimeout(() => setContactSuccess(false), 8000);
-    }, 1200);
+    } catch (err: any) {
+      setContactLoading(false);
+      alert(err.message || "Failed to submit inquiry. Please email kaldevsedutech@gmail.com.");
+    }
   };
 
   return (
@@ -1037,7 +1054,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                   </div>
                   <div>
                     <span className="block text-[10px] text-slate-400 font-bold uppercase">OFFICIAL EMAIL DESK</span>
-                    <span className="text-slate-800 font-bold text-emerald-600">mychatgptcourse@gmail.com</span>
+                    <span className="text-slate-800 font-bold text-emerald-600">kaldevsedutech@gmail.com</span>
                   </div>
                 </div>
               </div>
@@ -1093,7 +1110,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <Mail className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold text-slate-800">Email Address</p>
-                      <a href="mailto:mychatgptcourse@gmail.com" className="text-emerald-600 hover:underline">mychatgptcourse@gmail.com</a>
+                      <a href="mailto:kaldevsedutech@gmail.com" className="text-emerald-600 hover:underline">kaldevsedutech@gmail.com</a>
                     </div>
                   </div>
 
@@ -1878,7 +1895,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <p>WAPIMI is provided as a digital software service. We are not responsible for recipient-side network issues, WhatsApp/Meta platform restrictions, customer misuse, third-party outages, or indirect business losses.</p>
 
               <h3 className="text-sm font-bold text-slate-900">9. Governing Law and Contact</h3>
-              <p>These terms are governed by the laws of India. For questions, contact WAPIMI Automation Technologies, Sector 62, Noida, Uttar Pradesh, India, at mychatgptcourse@gmail.com.</p>
+              <p>These terms are governed by the laws of India. For questions, contact WAPIMI Automation Technologies, Sector 62, Noida, Uttar Pradesh, India, at kaldevsedutech@gmail.com.</p>
             </div>
           </div>
         )}
@@ -1914,7 +1931,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <p>You may contact us to request correction, export, or deletion of your account data where legally permitted. Some records may be retained where required for payment, security, legal, or fraud-prevention purposes.</p>
 
               <h3 className="text-sm font-bold text-slate-900">8. Contact Information</h3>
-              <p>For privacy requests, contact WAPIMI Automation Technologies at mychatgptcourse@gmail.com. Business address: Sector 62, Noida, Uttar Pradesh, India.</p>
+              <p>For privacy requests, contact WAPIMI Automation Technologies at kaldevsedutech@gmail.com. Business address: Sector 62, Noida, Uttar Pradesh, India.</p>
             </div>
           </div>
         )}
@@ -1938,7 +1955,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <p>Approved refunds will be processed to the original payment method within 7 to 10 business days, subject to Razorpay and bank processing timelines.</p>
 
               <h3 className="text-sm font-bold text-slate-900">4. Refund Contact</h3>
-              <p>For refund or cancellation requests, email <a href="mailto:mychatgptcourse@gmail.com" className="text-emerald-600 font-bold hover:underline">mychatgptcourse@gmail.com</a> with your registered email, payment reference, and reason for the request.</p>
+              <p>For refund or cancellation requests, email <a href="mailto:kaldevsedutech@gmail.com" className="text-emerald-600 font-bold hover:underline">kaldevsedutech@gmail.com</a> with your registered email, payment reference, and reason for the request.</p>
             </div>
           </div>
         )}
@@ -1962,7 +1979,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <p>Because WAPIMI is a digital SaaS product, there are no shipping charges, courier tracking numbers, or physical delivery timelines.</p>
 
               <h3 className="text-sm font-bold text-slate-900">4. Support</h3>
-              <p>If your account is not activated after successful payment, contact support at <a href="mailto:mychatgptcourse@gmail.com" className="text-emerald-600 font-bold hover:underline">mychatgptcourse@gmail.com</a>. Include your registered email and Razorpay payment reference.</p>
+              <p>If your account is not activated after successful payment, contact support at <a href="mailto:kaldevsedutech@gmail.com" className="text-emerald-600 font-bold hover:underline">kaldevsedutech@gmail.com</a>. Include your registered email and Razorpay payment reference.</p>
             </div>
           </div>
         )}
@@ -2013,7 +2030,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               </li>
               <li className="flex items-start gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                <a href="mailto:mychatgptcourse@gmail.com" className="hover:text-white transition-colors">mychatgptcourse@gmail.com</a>
+                <a href="mailto:kaldevsedutech@gmail.com" className="hover:text-white transition-colors">kaldevsedutech@gmail.com</a>
               </li>
               <li className="flex items-start gap-1.5">
                 <Phone className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
@@ -2032,3 +2049,4 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     </div>
   );
 }
+

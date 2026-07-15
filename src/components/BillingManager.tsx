@@ -637,7 +637,7 @@ export default function BillingManager({ user, onUserUpdate }: BillingManagerPro
 
           <div className="p-3.5 bg-blue-50/40 border border-blue-100 rounded-xl text-[10px] text-slate-500 flex gap-2">
             <Coins className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-            <p>Our payment gateway operates in developer sandbox mode. Subscribing generates mock invoices, completes simulated processing instantly, and adjusts limits instantly.</p>
+            <p>Payments are processed through Razorpay Checkout. Successful verified payments generate invoices and update account limits automatically.</p>
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { User, WhatsAppSession, Campaign, ContactGroup, Chat, DashboardStats } from "../types";
+import { apiUrl } from "./apiUrl";
 
 const getHeaders = () => {
   const token = localStorage.getItem("wapi_token") || "";
@@ -11,7 +12,7 @@ const getHeaders = () => {
 export const api = {
   // Auth API
   login: async (email: string, password: string) => {
-    const res = await fetch("/api/auth/login", {
+    const res = await fetch(apiUrl("/api/auth/login"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -24,7 +25,7 @@ export const api = {
   },
 
   getCurrentUser: async () => {
-    const res = await fetch("/api/auth/me", {
+    const res = await fetch(apiUrl("/api/auth/me"), {
       headers: getHeaders(),
     });
     if (!res.ok) throw new Error("Unauthenticated");
@@ -33,13 +34,13 @@ export const api = {
 
   // Admin APIs
   getUsers: async () => {
-    const res = await fetch("/api/admin/users", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/admin/users"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load users");
     return res.json();
   },
 
   createUser: async (userData: Partial<User>) => {
-    const res = await fetch("/api/admin/users", {
+    const res = await fetch(apiUrl("/api/admin/users"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(userData),
@@ -52,7 +53,7 @@ export const api = {
   },
 
   updateUser: async (id: string, updates: Partial<User>) => {
-    const res = await fetch(`/api/admin/users/${id}`, {
+    const res = await fetch(apiUrl(`/api/admin/users/${id}`), {
       method: "PATCH",
       headers: getHeaders(),
       body: JSON.stringify(updates),
@@ -66,13 +67,13 @@ export const api = {
 
   // WhatsApp API
   getSession: async (): Promise<{ session: WhatsAppSession; qrState: any }> => {
-    const res = await fetch("/api/whatsapp/session", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/whatsapp/session"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load session");
     return res.json();
   },
 
   requestQR: async () => {
-    const res = await fetch("/api/whatsapp/qr", {
+    const res = await fetch(apiUrl("/api/whatsapp/qr"), {
       method: "POST",
       headers: getHeaders(),
     });
@@ -81,7 +82,7 @@ export const api = {
   },
 
   simulateScan: async (scannedNumber: string) => {
-    const res = await fetch("/api/whatsapp/simulate-scan", {
+    const res = await fetch(apiUrl("/api/whatsapp/simulate-scan"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ scannedNumber }),
@@ -94,7 +95,7 @@ export const api = {
   },
 
   logoutDevice: async () => {
-    const res = await fetch("/api/whatsapp/logout", {
+    const res = await fetch(apiUrl("/api/whatsapp/logout"), {
       method: "POST",
       headers: getHeaders(),
     });
@@ -104,13 +105,13 @@ export const api = {
 
   // Contact Groups API
   getContactGroups: async (): Promise<{ contactGroups: ContactGroup[] }> => {
-    const res = await fetch("/api/contact-groups", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/contact-groups"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load contact groups");
     return res.json();
   },
 
   saveContactGroup: async (name: string, contacts: any[]) => {
-    const res = await fetch("/api/contact-groups", {
+    const res = await fetch(apiUrl("/api/contact-groups"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ name, contacts }),
@@ -120,7 +121,7 @@ export const api = {
   },
 
   deleteContactGroup: async (id: string) => {
-    const res = await fetch(`/api/contact-groups/${id}`, {
+    const res = await fetch(apiUrl(`/api/contact-groups/${id}`), {
       method: "DELETE",
       headers: getHeaders(),
     });
@@ -130,13 +131,13 @@ export const api = {
 
   // Campaigns API
   getCampaigns: async (): Promise<{ campaigns: Campaign[] }> => {
-    const res = await fetch("/api/campaigns", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/campaigns"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load campaigns");
     return res.json();
   },
 
   getCampaignLogs: async (id: string): Promise<{ campaign: Campaign; logs: any[] }> => {
-    const res = await fetch(`/api/campaigns/${id}/logs`, { headers: getHeaders() });
+    const res = await fetch(apiUrl(`/api/campaigns/${id}/logs`), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load campaign logs");
     return res.json();
   },
@@ -156,7 +157,7 @@ export const api = {
     mediaName?: string;
     enableRetry?: boolean;
   }) => {
-    const res = await fetch("/api/campaigns", {
+    const res = await fetch(apiUrl("/api/campaigns"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(campaignData),
@@ -177,7 +178,7 @@ export const api = {
     delayBetweenValue?: number;
     delayBetweenUnit?: string;
   }) => {
-    const res = await fetch("/api/campaigns/direct", {
+    const res = await fetch(apiUrl("/api/campaigns/direct"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(campaignData),
@@ -190,7 +191,7 @@ export const api = {
   },
 
   pauseCampaign: async (id: string) => {
-    const res = await fetch(`/api/campaigns/${id}/pause`, {
+    const res = await fetch(apiUrl(`/api/campaigns/${id}/pause`), {
       method: "POST",
       headers: getHeaders(),
     });
@@ -199,7 +200,7 @@ export const api = {
   },
 
   resumeCampaign: async (id: string) => {
-    const res = await fetch(`/api/campaigns/${id}/resume`, {
+    const res = await fetch(apiUrl(`/api/campaigns/${id}/resume`), {
       method: "POST",
       headers: getHeaders(),
     });
@@ -211,7 +212,7 @@ export const api = {
   },
 
   stopCampaign: async (id: string) => {
-    const res = await fetch(`/api/campaigns/${id}/stop`, {
+    const res = await fetch(apiUrl(`/api/campaigns/${id}/stop`), {
       method: "POST",
       headers: getHeaders(),
     });
@@ -221,13 +222,13 @@ export const api = {
 
   // Media Library API
   getMedia: async (): Promise<{ media: any[] }> => {
-    const res = await fetch("/api/media", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/media"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load media assets");
     return res.json();
   },
 
   createMedia: async (mediaData: { name: string; type: string; url: string; size?: string }) => {
-    const res = await fetch("/api/media", {
+    const res = await fetch(apiUrl("/api/media"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(mediaData),
@@ -238,13 +239,13 @@ export const api = {
 
   // Chat/Inbox API
   getChats: async (): Promise<{ chats: Chat[] }> => {
-    const res = await fetch("/api/chats", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/chats"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load chats");
     return res.json();
   },
 
   sendInboxMessage: async (phone: string, text: string, name?: string, image?: string, pdfUrl?: string, mediaType?: string, mediaName?: string) => {
-    const res = await fetch(`/api/chats/${phone}/messages`, {
+    const res = await fetch(apiUrl(`/api/chats/${phone}/messages`), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ message: text, name, image, pdfUrl, mediaType, mediaName }),
@@ -257,7 +258,7 @@ export const api = {
   },
 
   simulateInboundMessage: async (phone: string, text: string, name?: string) => {
-    const res = await fetch("/api/chats/simulate-receive", {
+    const res = await fetch(apiUrl("/api/chats/simulate-receive"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ phone, message: text, name }),
@@ -276,13 +277,13 @@ export const api = {
 
   // Auto Reply Rules APIs
   getAutoReplyRules: async () => {
-    const res = await fetch("/api/autoreply/rules", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/autoreply/rules"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load auto-reply rules");
     return res.json();
   },
 
   createAutoReplyRule: async (ruleData: { keyword: string; matchType: string; replyText: string; aiEnabled: boolean; aiPrompt?: string }) => {
-    const res = await fetch("/api/autoreply/rules", {
+    const res = await fetch(apiUrl("/api/autoreply/rules"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(ruleData)
@@ -295,7 +296,7 @@ export const api = {
   },
 
   importAutoReplyRulesBulk: async (rules: any[]) => {
-    const res = await fetch("/api/autoreply/rules/bulk", {
+    const res = await fetch(apiUrl("/api/autoreply/rules/bulk"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ rules })
@@ -308,7 +309,7 @@ export const api = {
   },
 
   updateAutoReplyRule: async (id: string, updates: any) => {
-    const res = await fetch(`/api/autoreply/rules/${id}`, {
+    const res = await fetch(apiUrl(`/api/autoreply/rules/${id}`), {
       method: "PATCH",
       headers: getHeaders(),
       body: JSON.stringify(updates)
@@ -321,7 +322,7 @@ export const api = {
   },
 
   deleteAutoReplyRule: async (id: string) => {
-    const res = await fetch(`/api/autoreply/rules/${id}`, {
+    const res = await fetch(apiUrl(`/api/autoreply/rules/${id}`), {
       method: "DELETE",
       headers: getHeaders()
     });
@@ -331,13 +332,13 @@ export const api = {
 
   // Billing APIs
   getBillingPlans: async () => {
-    const res = await fetch("/api/billing/plans", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/billing/plans"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load plans");
     return res.json();
   },
 
   subscribeToPlan: async (planId: string, cycle: string) => {
-    const res = await fetch("/api/billing/subscribe", {
+    const res = await fetch(apiUrl("/api/billing/subscribe"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ planId, cycle })
@@ -356,7 +357,7 @@ export const api = {
     planId: string;
     cycle: string;
   }) => {
-    const res = await fetch("/api/billing/verify-payment", {
+    const res = await fetch(apiUrl("/api/billing/verify-payment"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(verificationData)
@@ -369,7 +370,7 @@ export const api = {
   },
 
   applyPromoToActiveCycle: async (promoCode: string) => {
-    const res = await fetch("/api/billing/apply-promo", {
+    const res = await fetch(apiUrl("/api/billing/apply-promo"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ promoCode })
@@ -382,20 +383,20 @@ export const api = {
   },
 
   getTransactions: async () => {
-    const res = await fetch("/api/billing/transactions", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/billing/transactions"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load invoices");
     return res.json();
   },
 
   // Birthday Automation APIs
   getBirthdayConfig: async () => {
-    const res = await fetch("/api/birthday/config", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/birthday/config"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load birthday config");
     return res.json();
   },
 
   saveBirthdayConfig: async (configData: { enabled: boolean; templateText: string; runHour: string }) => {
-    const res = await fetch("/api/birthday/config", {
+    const res = await fetch(apiUrl("/api/birthday/config"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(configData)
@@ -405,7 +406,7 @@ export const api = {
   },
 
   triggerBirthdayCheck: async () => {
-    const res = await fetch("/api/birthday/trigger", {
+    const res = await fetch(apiUrl("/api/birthday/trigger"), {
       method: "POST",
       headers: getHeaders()
     });
@@ -418,13 +419,13 @@ export const api = {
 
   // Chronological Activity Logs API
   getActivityLogs: async () => {
-    const res = await fetch("/api/activity-logs", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/activity-logs"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load activity logs");
     return res.json();
   },
 
   logActivity: async (action: string, details: string) => {
-    const res = await fetch("/api/activity-logs/log", {
+    const res = await fetch(apiUrl("/api/activity-logs/log"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ action, details }),
@@ -434,21 +435,21 @@ export const api = {
   },
 
   getAdminActivityLogs: async () => {
-    const res = await fetch("/api/admin/activity-logs", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/admin/activity-logs"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load administrative audit logs");
     return res.json();
   },
 
   // Campaign trend stats API
   getCampaignTrend: async (): Promise<{ trend: any[] }> => {
-    const res = await fetch("/api/campaigns/trend", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/campaigns/trend"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load campaign trend stats");
     return res.json();
   },
 
   // Update experience mode API
   updateExperienceMode: async (experienceMode: "daily" | "professional" | "advanced") => {
-    const res = await fetch("/api/user/experience-mode", {
+    const res = await fetch(apiUrl("/api/user/experience-mode"), {
       method: "PATCH",
       headers: getHeaders(),
       body: JSON.stringify({ experienceMode }),
@@ -462,7 +463,7 @@ export const api = {
 
   // Update brand color API
   updateBrandColor: async (brandColor: string) => {
-    const res = await fetch("/api/user/brand-color", {
+    const res = await fetch(apiUrl("/api/user/brand-color"), {
       method: "PATCH",
       headers: getHeaders(),
       body: JSON.stringify({ brandColor }),
@@ -476,21 +477,21 @@ export const api = {
 
   // Smart Insights API
   getSmartInsights: async (): Promise<{ insights: any[] }> => {
-    const res = await fetch("/api/campaigns/smart-insights", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/campaigns/smart-insights"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load smart marketing insights");
     return res.json();
   },
 
   // System Status API
   getSystemStatus: async (): Promise<{ maintenanceMode: boolean; maintenanceMessage: string; notifications: any[]; promoCodes: any[] }> => {
-    const res = await fetch("/api/system-status");
+    const res = await fetch(apiUrl("/api/system-status"));
     if (!res.ok) throw new Error("Failed to load system status");
     return res.json();
   },
 
   // Admin Maintenance Config API
   updateMaintenanceSettings: async (maintenanceMode: boolean, maintenanceMessage: string) => {
-    const res = await fetch("/api/admin/maintenance", {
+    const res = await fetch(apiUrl("/api/admin/maintenance"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ maintenanceMode, maintenanceMessage }),
@@ -504,13 +505,13 @@ export const api = {
 
   // Admin Promo Codes API
   getAdminPromoCodes: async (): Promise<{ promoCodes: any[] }> => {
-    const res = await fetch("/api/admin/promo-codes", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/admin/promo-codes"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load promo codes");
     return res.json();
   },
 
   createPromoCode: async (promo: { code: string; discountPercent: number; description: string; expiryDate: string; status: string }) => {
-    const res = await fetch("/api/admin/promo-codes", {
+    const res = await fetch(apiUrl("/api/admin/promo-codes"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(promo),
@@ -523,7 +524,7 @@ export const api = {
   },
 
   updatePromoCode: async (id: string, updates: any) => {
-    const res = await fetch(`/api/admin/promo-codes/${id}`, {
+    const res = await fetch(apiUrl(`/api/admin/promo-codes/${id}`), {
       method: "PATCH",
       headers: getHeaders(),
       body: JSON.stringify(updates),
@@ -536,7 +537,7 @@ export const api = {
   },
 
   deletePromoCode: async (id: string) => {
-    const res = await fetch(`/api/admin/promo-codes/${id}`, {
+    const res = await fetch(apiUrl(`/api/admin/promo-codes/${id}`), {
       method: "DELETE",
       headers: getHeaders(),
     });
@@ -546,13 +547,13 @@ export const api = {
 
   // Admin Direct Notifications API
   getAdminNotifications: async (): Promise<{ notifications: any[] }> => {
-    const res = await fetch("/api/admin/notifications", { headers: getHeaders() });
+    const res = await fetch(apiUrl("/api/admin/notifications"), { headers: getHeaders() });
     if (!res.ok) throw new Error("Failed to load public notifications");
     return res.json();
   },
 
   broadcastNotification: async (notif: { type: string; title: string; message: string; targetRole?: string }) => {
-    const res = await fetch("/api/admin/notifications", {
+    const res = await fetch(apiUrl("/api/admin/notifications"), {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(notif),
@@ -565,7 +566,7 @@ export const api = {
   },
 
   deleteBroadcastNotification: async (id: string) => {
-    const res = await fetch(`/api/admin/notifications/${id}`, {
+    const res = await fetch(apiUrl(`/api/admin/notifications/${id}`), {
       method: "DELETE",
       headers: getHeaders(),
     });
@@ -575,7 +576,7 @@ export const api = {
 
   // Password Recovery Flow APIs
   forgotPassword: async (phoneOrEmail: string): Promise<{ message: string; simulatedCode: string }> => {
-    const res = await fetch("/api/auth/forgot-password", {
+    const res = await fetch(apiUrl("/api/auth/forgot-password"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phoneOrEmail }),
@@ -588,7 +589,7 @@ export const api = {
   },
 
   resetPassword: async (payload: { phoneOrEmail: string; code: string; newPassword: string }): Promise<{ message: string }> => {
-    const res = await fetch("/api/auth/reset-password", {
+    const res = await fetch(apiUrl("/api/auth/reset-password"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

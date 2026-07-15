@@ -19,6 +19,7 @@ import {
   Info,
   DollarSign
 } from "lucide-react";
+import { apiUrl } from "../lib/apiUrl";
 
 interface FaqAndPoliciesProps {
   user: any;
@@ -122,7 +123,7 @@ export default function FaqAndPolicies({ user }: FaqAndPoliciesProps) {
     let active = true;
     const loadFaqData = async () => {
       try {
-        const res = await fetch("/api/faq-data");
+        const res = await fetch(apiUrl("/api/faq-data"));
         if (!res.ok) throw new Error("Status code not ok");
         const data = await res.json();
         if (active) {

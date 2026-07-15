@@ -7,6 +7,7 @@ import {
   Shield, CreditCard, RefreshCw, Star, ArrowUpRight, X, Info
 } from "lucide-react";
 import CountryCodeSelector from "./CountryCodeSelector";
+import { apiUrl } from "../lib/apiUrl";
 
 interface LoginScreenProps {
   onLoginSuccess: (token: string, user: any) => void;
@@ -58,7 +59,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setEmailCheck({ status: "checking" });
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch("/api/auth/check-availability", {
+        const res = await fetch(apiUrl("/api/auth/check-availability"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: regEmail.trim() }),
@@ -93,7 +94,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setPhoneCheck({ status: "checking" });
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch("/api/auth/check-availability", {
+        const res = await fetch(apiUrl("/api/auth/check-availability"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ phone: fullPhone }),
@@ -158,7 +159,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/reset-password-with-token", {
+      const res = await fetch(apiUrl("/api/auth/reset-password-with-token"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -203,7 +204,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      const res = await fetch(apiUrl("/api/auth/forgot-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phoneOrEmail: forgotPhoneOrEmail.trim() }),
@@ -243,7 +244,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/reset-password", {
+      const res = await fetch(apiUrl("/api/auth/reset-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -353,7 +354,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(apiUrl("/api/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: phone, password }), // Passed as email for API compatibility
@@ -423,7 +424,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       let regData = pendingCheckoutAccount;
       if (!regData?.token) {
         const fullPhone = regCountryCode + regPhone.trim().replace(/\D/g, "");
-        const regRes = await fetch("/api/auth/register", {
+        const regRes = await fetch(apiUrl("/api/auth/register"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -443,7 +444,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
       // Fetch Razorpay Order from backend
       const billingCycle = selectedPlan.cycle || "daily";
-      const orderRes = await fetch("/api/billing/subscribe", {
+      const orderRes = await fetch(apiUrl("/api/billing/subscribe"), {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -472,7 +473,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         handler: async function (response: any) {
           try {
             // Verify payment on the backend
-            const verifyRes = await fetch("/api/billing/verify-payment", {
+            const verifyRes = await fetch(apiUrl("/api/billing/verify-payment"), {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -544,7 +545,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     }
     setContactLoading(true);
     try {
-      const res = await fetch("/api/contact-inquiries", {
+      const res = await fetch(apiUrl("/api/contact-inquiries"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

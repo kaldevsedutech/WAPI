@@ -2709,7 +2709,7 @@ app.get("/api/billing/plans", authenticateUser, (req, res) => {
         monthly: 500,
         annual: 5000
       },
-      features: ["No sending limits", "Full AI Auto-replies with context control", "Birthday automation running daily", "Dedicated multi-number verification"]
+      features: ["No sending limits", "Rule-based auto-replies with saved responses", "Birthday automation running daily", "Dedicated multi-number verification"]
     }
   ];
   res.json({ plans });

@@ -1177,15 +1177,19 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Subject</label>
-                        <input 
-                          type="text" 
+                        <label className="block text-xs font-semibold text-slate-700 mb-1">Inquiry Type</label>
+                        <select
                           required 
                           value={contactSubject} 
                           onChange={(e) => setContactSubject(e.target.value)}
-                          placeholder="Subscription Query" 
                           className="block w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 text-xs text-slate-900 focus:outline-none"
-                        />
+                        >
+                          <option value="">Select inquiry type</option>
+                          <option value="Suggestion">Suggestion</option>
+                          <option value="Issue">Issue</option>
+                          <option value="Details">Details</option>
+                          <option value="Others">Others</option>
+                        </select>
                       </div>
                     </div>
 

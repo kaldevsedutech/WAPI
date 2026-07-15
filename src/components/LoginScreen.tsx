@@ -663,7 +663,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 <div className="space-y-6 text-center lg:text-left">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Compliant WhatsApp SaaS Platform</span>
+                    <span>WAPIMI = WhatsApp Powered Marketing Intelligence</span>
                   </div>
                   <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
                     WhatsApp Marketing <br />
@@ -1026,7 +1026,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
             <div className="text-center space-y-4">
               <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">About WAPIMI</h1>
               <p className="text-sm text-slate-500 max-w-xl mx-auto">
-                Providing standard, robust solutions for business automation and bulk customer notifications.
+                WAPIMI stands for WhatsApp Powered Marketing Intelligence, providing standard, robust solutions for business automation and bulk customer notifications.
               </p>
             </div>
 
@@ -2001,6 +2001,9 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               </div>
               <span className="text-sm font-extrabold text-white">WAPIMI</span>
             </div>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+              WhatsApp Powered Marketing Intelligence
+            </p>
             <p className="text-[11px] text-slate-500 leading-relaxed">
                 Enterprise WhatsApp marketing automation software. Build contact groups, schedule campaigns, send predefined auto-replies, and track receipts.
             </p>

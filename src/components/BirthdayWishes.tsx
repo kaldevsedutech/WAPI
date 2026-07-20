@@ -123,7 +123,7 @@ export default function BirthdayWishes() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
               <Gift className="w-6.5 h-6.5 text-emerald-600" />
-              <span>Automated Birthday Wishes</span>
+              <span>Automated Message Schedule</span>
             </h1>
             <p className="text-sm text-slate-500 mt-1">
               Engage clients effortlessly. Our platform runs an automated morning sweep, dispatching customized dynamic templates to clients celebrating birthdays.

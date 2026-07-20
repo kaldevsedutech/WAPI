@@ -2754,7 +2754,7 @@ app.get("/api/billing/plans", authenticateUser, (req, res) => {
         monthly: 100,
         annual: 1000
       },
-      features: ["Rule-based auto-replies", "Birthday wishes & message scheduling alarm", "CSV contact import", "Outbound analytics"]
+      features: ["Rule-based auto-replies", "Message Scheduling Alarm", "CSV contact import", "Outbound analytics"]
     },
     {
       id: "premium",
@@ -2767,7 +2767,7 @@ app.get("/api/billing/plans", authenticateUser, (req, res) => {
         monthly: 300,
         annual: 3000
       },
-      features: ["Rule-based smart replies", "Birthday wishes & message scheduling alarm", "Message scheduling dashboard", "Advanced Engagement Analytics Charts"]
+      features: ["Rule-based smart replies", "Message Scheduling Alarm", "Message scheduling dashboard", "Advanced Engagement Analytics Charts"]
     },
     {
       id: "business",
@@ -2780,7 +2780,7 @@ app.get("/api/billing/plans", authenticateUser, (req, res) => {
         monthly: 500,
         annual: 5000
       },
-      features: ["No sending limits", "Rule-based auto-replies with saved responses", "Birthday automation running daily", "Dedicated multi-number verification"]
+      features: ["No sending limits", "Rule-based auto-replies with saved responses", "Message scheduling running daily", "Dedicated multi-number verification"]
     }
   ];
   res.json({ plans });

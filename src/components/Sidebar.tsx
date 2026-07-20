@@ -54,7 +54,7 @@ export default function Sidebar({ currentTab, setTab, user, session, onLogout, o
     { id: "campaign_reports", label: "Campaign Reports", icon: FileBarChart2, featureName: "campaign-reports" },
     { id: "contacts", label: "Contacts & Lists", icon: Users, featureName: "contacts-manager" },
     { id: "auto_reply", label: "Auto Replies", icon: Sparkles, featureName: "auto-replies" },
-    { id: "birthday", label: "Birthday Wishes", icon: Calendar, featureName: "birthday-wishes" },
+    { id: "birthday", label: "Message Schedule", icon: Calendar, featureName: "birthday-wishes" },
     { id: "billing", label: "Billing & Plans", icon: CreditCard },
     { id: "inbox", label: "2-Way Inbox", icon: MessageSquare },
     { id: "faq", label: "FAQ & Policies", icon: HelpCircle },

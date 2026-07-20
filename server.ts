@@ -18,6 +18,15 @@ import crypto from "crypto";
 
 dotenv.config();
 
+import * as Sentry from "@sentry/node";
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+  });
+  console.log("Sentry error telemetry initialized.");
+}
+
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
 const DEMO_USER_1_PHONE = process.env.TEST_USER_1_PHONE || "+910000000001";

@@ -2744,6 +2744,19 @@ app.delete("/api/autoreply/rules/:id", authenticateUser, (req, res) => {
 app.get("/api/billing/plans", authenticateUser, (req, res) => {
   const plans = [
     {
+      id: "basic",
+      name: "Basic Growth Plan",
+      limits: "1,000 messages / day",
+      dailyLimit: 1000,
+      pricing: {
+        daily: 5,
+        weekly: 30,
+        monthly: 100,
+        annual: 1000
+      },
+      features: ["Rule-based auto-replies", "Birthday wishes & message scheduling alarm", "CSV contact import", "Outbound analytics"]
+    },
+    {
       id: "premium",
       name: "Premium Automation Suite",
       limits: "10,000 messages / day",
@@ -2754,7 +2767,7 @@ app.get("/api/billing/plans", authenticateUser, (req, res) => {
         monthly: 300,
         annual: 3000
       },
-      features: ["Rule-based smart replies", "Birthday wishes automation", "Message scheduling dashboard", "Advanced Engagement Analytics Charts"]
+      features: ["Rule-based smart replies", "Birthday wishes & message scheduling alarm", "Message scheduling dashboard", "Advanced Engagement Analytics Charts"]
     },
     {
       id: "business",
@@ -3484,6 +3497,52 @@ setInterval(() => {
   const campaigns = db.read("campaigns");
   const now = new Date();
 
+  // 1. Automated Birthday Wish Alarm Execution
+  const bdayConfigs = db.read("birthday_config");
+  const todayStr = now.toISOString().split("T")[0];
+  bdayConfigs.forEach(bConfig => {
+    if (bConfig.enabled && bConfig.lastCheckedDate !== todayStr) {
+      const currentHour = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      if (!bConfig.runHour || bConfig.runHour <= currentHour) {
+        bConfig.lastCheckedDate = todayStr;
+        db.write("birthday_config", bdayConfigs);
+        console.log(`Cron: Automated Birthday Wish Alarm triggered for user ${bConfig.userId}`);
+
+        const groups = db.read("contact_groups").filter(g => g.userId === bConfig.userId);
+        const todayMMDD = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        const matchedContacts: any[] = [];
+        groups.forEach(g => {
+          g.contacts.forEach((contact: any) => {
+            if (contact.variables?.birthday && contact.variables.birthday.includes(todayMMDD)) {
+              matchedContacts.push(contact);
+            }
+          });
+        });
+
+        if (matchedContacts.length > 0) {
+          const messages = db.read("messages");
+          matchedContacts.forEach(contact => {
+            let text = bConfig.templateText || "Happy Birthday {customer}! 🎂";
+            text = text.replace(/{customer}/g, contact.name).replace(/{name}/g, contact.name).replace(/{phone}/g, contact.phone);
+            messages.push({
+              id: "msg_bday_alarm_" + Math.random().toString(36).substring(2, 9),
+              userId: bConfig.userId,
+              name: contact.name,
+              phone: contact.phone,
+              message: text,
+              status: "delivered" as const,
+              direction: "outbound" as const,
+              timestamp: new Date().toISOString()
+            });
+          });
+          db.write("messages", messages);
+          logActivity(bConfig.userId, "Birthday Alarm Triggered", `Automated alarm dispatched birthday wishes to ${matchedContacts.length} contacts.`);
+        }
+      }
+    }
+  });
+
+  // 2. Scheduled Campaign Broadcast Execution
   campaigns.forEach(c => {
     if (c.status === "scheduled" && c.scheduledTime) {
       const scheduleTime = new Date(c.scheduledTime);

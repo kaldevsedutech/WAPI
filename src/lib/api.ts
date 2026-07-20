@@ -65,6 +65,33 @@ export const api = {
     return res.json();
   },
 
+  // WhatsApp OTP Verification
+  sendWhatsappOtp: async (phone: string) => {
+    const res = await fetch(apiUrl("/api/auth/send-whatsapp-otp"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to send OTP code.");
+    }
+    return res.json();
+  },
+
+  verifyWhatsappOtp: async (phone: string, otp: string) => {
+    const res = await fetch(apiUrl("/api/auth/verify-whatsapp-otp"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, otp }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "OTP verification failed.");
+    }
+    return res.json();
+  },
+
   // WhatsApp API
   getSession: async (): Promise<{ session: WhatsAppSession; qrState: any }> => {
     const res = await fetch(apiUrl("/api/whatsapp/session"), { headers: getHeaders() });

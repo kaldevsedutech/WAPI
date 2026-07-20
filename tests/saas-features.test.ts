@@ -358,4 +358,31 @@ describe("WAPISaaS REST API & Core Rules Integration Tests", () => {
       headers: { "Authorization": `Bearer ${authToken}` }
     });
   });
+
+  it("should send and verify a WhatsApp 6-digit OTP code successfully", async () => {
+    const demoPhone = readInternalDemoPhone();
+
+    // 1. Request OTP
+    const sendRes = await fetch(`${BASE_URL}/api/auth/send-whatsapp-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: demoPhone })
+    });
+
+    expect(sendRes.status).toBe(200);
+    const sendData = await sendRes.json();
+    expect(sendData.otpCode).toBeDefined();
+
+    // 2. Verify OTP
+    const verifyRes = await fetch(`${BASE_URL}/api/auth/verify-whatsapp-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: demoPhone, otp: sendData.otpCode })
+    });
+
+    expect(verifyRes.status).toBe(200);
+    const verifyData = await verifyRes.json();
+    expect(verifyData.verified).toBe(true);
+    expect(verifyData.user.isWhatsappVerified).toBe(true);
+  });
 });

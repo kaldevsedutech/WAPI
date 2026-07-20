@@ -1145,6 +1145,84 @@ app.post("/api/auth/reset-password", (req, res) => {
   res.json({ message: "Password reset successful! You can now log in with your new password." });
 });
 
+// --- WHATSAPP OTP VERIFICATION ENDPOINTS ---
+app.post("/api/auth/send-whatsapp-otp", (req, res) => {
+  const { phone } = req.body;
+  if (!phone) {
+    return res.status(400).json({ error: "Mobile phone number is required." });
+  }
+
+  const cleanPhone = String(phone).trim().replace(/[\s\-\+]/g, "");
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+  const users = db.read("users");
+  const user = users.find(u => (u.allowedWhatsapp || "").replace(/[\s\-\+]/g, "") === cleanPhone);
+
+  if (user) {
+    user.otpCode = otpCode;
+    user.otpExpires = expiresAt;
+    db.write("users", users);
+  }
+
+  // Dispatch WhatsApp OTP message record
+  const messages = db.read("messages");
+  messages.push({
+    id: "msg_otp_" + Math.random().toString(36).substring(2, 9),
+    userId: user ? user.id : "system",
+    name: user ? user.name : "Verification User",
+    phone: phone,
+    message: `[WAPIMI] Your WhatsApp Verification OTP code is ${otpCode}. Valid for 5 minutes. Do not share this code.`,
+    status: "delivered",
+    direction: "outbound",
+    timestamp: new Date().toISOString()
+  });
+  db.write("messages", messages);
+
+  res.json({
+    message: `Verification OTP code dispatched to WhatsApp number ${phone}.`,
+    phone,
+    otpCode
+  });
+});
+
+app.post("/api/auth/verify-whatsapp-otp", (req, res) => {
+  const { phone, otp } = req.body;
+  if (!phone || !otp) {
+    return res.status(400).json({ error: "Phone number and 6-digit OTP code are required." });
+  }
+
+  const cleanPhone = String(phone).trim().replace(/[\s\-\+]/g, "");
+  const users = db.read("users");
+  const user = users.find(u => (u.allowedWhatsapp || "").replace(/[\s\-\+]/g, "") === cleanPhone);
+
+  if (!user) {
+    return res.status(404).json({ error: "No account found matching this WhatsApp number." });
+  }
+
+  if (!user.otpCode || user.otpCode !== String(otp).trim()) {
+    return res.status(400).json({ error: "Invalid OTP verification code. Please check and try again." });
+  }
+
+  if (user.otpExpires && user.otpExpires < Date.now()) {
+    return res.status(400).json({ error: "OTP verification code has expired. Request a new code." });
+  }
+
+  // Verified!
+  user.isWhatsappVerified = true;
+  delete user.otpCode;
+  delete user.otpExpires;
+  db.write("users", users);
+
+  logActivity(user.id, "WhatsApp OTP Verified", `Successfully verified WhatsApp number ${phone} via OTP.`);
+
+  res.json({
+    message: "WhatsApp number verified successfully!",
+    verified: true,
+    user
+  });
+});
+
 app.post("/api/contact-inquiries", (req, res) => {
   const { name, email, subject, message } = req.body;
   const safeName = String(name || "").trim();
